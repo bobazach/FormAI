@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.highlight {
+    color: blue; /* Change the color to whatever you prefer */
+}
+
+#background-image {
+    position: fixed; /* Changes from absolute to fixed */
+    z-index: -1;
+    width: 100%;
+    height: 100vh; /* Ensures the height is exactly the height of the viewport */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* This will push the nav to the right */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    padding-left: 30px;
+}
+
+.header nav {
+    padding-right: 30px;
+
+}
+
+.login-button, .get-started-button, .features-button{
+    width: 200px;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+}
+
+.login-button{
+    background-color: transparent;
+    border: 2px solid blue;
+}
+
+.get-started-button, .features-button {
+    background-color: blue;
+    color: white;
+}
+
+#main-content {
+    display: flex;
+    padding: 30px 30px 0px 30px;
+}
+
+#main-content-left {
+    width: 60%; /* Assigns each child div 50% of the parent's width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the content vertically */
+}
+
+#main-content-right {
+    width: 40%; /* Assigns each child div 50% of the parent's width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the content vertically */
+
+}
+
+#main-content-left p {
+    size: 18px;
+}
+
+#main-content-right img {
+    width: 100%; /* Makes the image take up 100% of the div's width */
+    height: auto; /* Keeps the height proportional to the width */
+    border-radius: 10px;
+}
+
+#how-it-works {
+    display: flex;
+    flex-direction: column;
+    padding-left: 30px;
+}
+
+#step-list {
+    display: flex;
+    flex-direction: row;
+    /* padding: 30px; */
+}
+
+.step {
+    padding-right: 10px;
+    width: 25%;
+    display: flex;
+    flex-direction: column; /* Stacks the flex items vertically */
+    align-items: center; /* Horizontally centers the flex items in the container */
+    justify-content: center; /* Vertically centers the flex items in the container */
+}
+
+
+.step img {
+    width: 50px;
+    height: 50px;
+}
