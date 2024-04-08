@@ -39,12 +39,6 @@ function initKeyPoints(canvas, dropdownId) {
                   "leftWrist", "rightWrist", "leftHip", "rightHip",
                   "leftKnee", "rightKnee", "leftAnkle", "rightAnkle"];
     var dropdown = document.getElementById(dropdownId);
-    
-    // Clear existing options in the dropdown to avoid duplication
-    while (dropdown.options.length > 0) {
-        dropdown.remove(0);
-    }
-
     labels.forEach(function(label) {
         var option = document.createElement('option');
         option.value = label;
@@ -53,18 +47,26 @@ function initKeyPoints(canvas, dropdownId) {
     });
 
     var dragObject = null;
+    var dragStarted = false;
 
     canvas.addEventListener('mousedown', function(e) {
         var rect = canvas.getBoundingClientRect();
         var x = e.clientX - rect.left;
         var y = e.clientY - rect.top;
-        // Check if we are on a point
+        dragStarted = false;
         for (var label in points) {
             var point = points[label];
             if (x >= point[0] - 5 && x <= point[0] + 5 && y >= point[1] - 5 && y <= point[1] + 5) {
                 dragObject = point;
+                dragStarted = true;
                 return;
             }
+        }
+        if (!dragStarted && !points[dropdown.value]) {
+            points[dropdown.value] = [x, y];
+            redrawAllPoints();
+            updateDropdown();
+            displayCoordinates(points);
         }
     });
 
@@ -81,23 +83,11 @@ function initKeyPoints(canvas, dropdownId) {
 
     canvas.addEventListener('mouseup', function(e) {
         dragObject = null;
-        displayCoordinates(points);
-    });
-
-    canvas.addEventListener('click', function(e) {
-        if (!dragObject && !points[dropdown.value]) {
-            placePoint(e);
+        if (dragStarted) {
+            displayCoordinates(points);
+            dragStarted = false; // Reset the flag after the drag is completed
         }
     });
-
-    function placePoint(e) {
-        var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-        points[dropdown.value] = [x, y];
-        redrawAllPoints();
-        updateDropdown(dropdown.selectedIndex);
-    }
 
     function redrawAllPoints() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
@@ -111,24 +101,33 @@ function initKeyPoints(canvas, dropdownId) {
         }
     }
 
-    function updateDropdown(currentIndex) {
-        var found = false;
-        for (let i = 1; i <= labels.length; i++) {
-            var nextIndex = (currentIndex + i) % labels.length;
-            if (!points[dropdown.options[nextIndex].value]) {
-                dropdown.selectedIndex = nextIndex;
-                found = true;
+    function updateDropdown() {
+        var allPlaced = true;  // Assume all points are placed initially
+        for (var i = 0; i < dropdown.options.length; i++) {
+            if (!points[dropdown.options[i].value]) {
+                dropdown.selectedIndex = i;
+                allPlaced = false;  // Found an unplaced point, set flag to false
                 break;
             }
         }
-        if (!found) {
-            alert('All points are placed. You can now drag them to adjust their positions.');
+    
+        if (allPlaced) {
+            // If all points are placed, show alert message
+            alert('All dots are placed. Please drag them to their appropriate spots.');
         }
     }
 
     function displayCoordinates(points) {
         var display = document.getElementById('coordsDisplay');
-        display.textContent = JSON.stringify(points, null, 2);
+        var formattedPoints = {};
+        for (var label in points) {
+            var point = points[label];
+            formattedPoints[label] = [
+                parseFloat(point[0].toFixed(2)),
+                parseFloat(point[1].toFixed(2))
+            ];
+        }
+        display.textContent = JSON.stringify(formattedPoints, null, 2);
     }
 }
 
@@ -148,3 +147,4 @@ document.getElementById('uploadReferenceButton').addEventListener('click', funct
 document.getElementById('referenceFileInput').addEventListener('change', function() {
     readURL(this, 'referenceImagePreview', 'referenceDropdown');
 });
+
