@@ -13,3 +13,7 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/analyze')
+def analyze():
+    return render_template('analyze.html')
