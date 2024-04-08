@@ -33,7 +33,7 @@ def generate_golf_swing_feedback(user_angles, pro_angles):
             {"role": "user", "content": prompt}, 
             {"role": "assistant", "content": "Suggestions: "}
         ],
-        max_tokens = 400
+        max_tokens = 5
     )
     
 

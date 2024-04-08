@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, jsonify
-from openai import OpenAI
 from gpt import generate_golf_swing_feedback
 
-client = OpenAI(api_key='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')
 
 app = Flask(__name__)
 
