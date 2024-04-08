@@ -9,26 +9,19 @@
     <div id="container">
         <div class="upload-section">
             <button type="button" class="upload-button" id="uploadUserButton">Upload User Input</button>
-            <div class="image-preview" id="userImagePreview"></div>
-            <select class="dropdown-menu" id="userDropdown">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
+            <div class="image-preview" id="userImagePreview" style="position: relative;"></div>
+            <select class="dropdown-menu" id="userDropdown"></select>
         </div>
         
         <div class="upload-section">
             <button type="button" class="upload-button" id="uploadReferenceButton">Upload Reference Input</button>
-            <div class="image-preview" id="referenceImagePreview"></div>
-            <select class="dropdown-menu" id="referenceDropdown">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
+            <div class="image-preview" id="referenceImagePreview" style="position: relative;"></div>
+            <select class="dropdown-menu" id="referenceDropdown"></select>
+        </div>
+
+        <div class="output-section">
+            <h2>Coordinates:</h2>
+            <pre id="coordsDisplay"></pre>
         </div>
     </div>
 
