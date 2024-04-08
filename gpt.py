@@ -1,7 +1,12 @@
 import openai
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-client = OpenAI(api_key='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')
+load_dotenv()
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def generate_golf_swing_feedback(user_angles, pro_angles):
     """
@@ -33,7 +38,7 @@ def generate_golf_swing_feedback(user_angles, pro_angles):
             {"role": "user", "content": prompt}, 
             {"role": "assistant", "content": "Suggestions: "}
         ],
-        max_tokens = 5
+        max_tokens = 400
     )
     
 

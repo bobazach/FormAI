@@ -5,8 +5,9 @@ function readURL(input, previewId, dropdownId) {
         reader.onload = function (e) {
             var img = document.createElement('img');
             img.src = e.target.result;
-            img.style.width = '100%';  // Ensure the image fits the container
-            img.style.height = 'auto';
+
+            // img.style.width = '100%';  // Ensure the image fits the container
+            // img.style.height = '100%';
 
             var preview = document.getElementById(previewId);
             preview.innerHTML = '';  // Clear any existing content

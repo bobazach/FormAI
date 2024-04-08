@@ -5,14 +5,14 @@ body {
 }
 
 .highlight {
-    color: blue; /* Change the color to whatever you prefer */
+    color: blue;
 }
 
 #background-image {
-    position: fixed; /* Changes from absolute to fixed */
+    position: fixed;
     z-index: -1;
     width: 100%;
-    height: 100vh; /* Ensures the height is exactly the height of the viewport */
+    height: 100vh;
 }
 
 .header {
@@ -30,12 +30,15 @@ body {
 
 .header nav {
     padding-right: 30px;
-
 }
 
-.nav-buttons {
+#nav-buttons {
     display: flex;
     flex-direction: row;
+}
+
+#nav-buttons form {
+    padding-left: 30px;
 }
 
 .login-button, .get-started-button, .features-button{
@@ -61,17 +64,17 @@ body {
 }
 
 #main-content-left {
-    width: 60%; /* Assigns each child div 50% of the parent's width */
+    width: 60%;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers the content vertically */
+    justify-content: center;
 }
 
 #main-content-right {
-    width: 40%; /* Assigns each child div 50% of the parent's width */
+    width: 40%;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers the content vertically */
+    justify-content: center;
 
 }
 
@@ -80,8 +83,8 @@ body {
 }
 
 #main-content-right img {
-    width: 100%; /* Makes the image take up 100% of the div's width */
-    height: auto; /* Keeps the height proportional to the width */
+    width: 100%;
+    height: auto;
     border-radius: 10px;
 }
 
@@ -94,18 +97,17 @@ body {
 #step-list {
     display: flex;
     flex-direction: row;
-    /* padding: 30px; */
+    align-items: start;
 }
 
 .step {
     padding-right: 10px;
     width: 25%;
     display: flex;
-    flex-direction: column; /* Stacks the flex items vertically */
-    align-items: center; /* Horizontally centers the flex items in the container */
-    justify-content: center; /* Vertically centers the flex items in the container */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-
 
 .step img {
     width: 50px;

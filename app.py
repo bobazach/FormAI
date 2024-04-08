@@ -1,8 +1,12 @@
 from flask import Flask, request, render_template, jsonify
 from gpt import generate_golf_swing_feedback
-
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 @app.route('/')
 def home():
