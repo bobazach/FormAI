@@ -2,31 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Upload and Analyze</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/dashboard.css') }}">
 </head>
 <body>
-    <h2>Upload Your Media to get Started</h2>
-    <div id="upload-container">
-        <div class="upload-block" id="uploadBlock1" onclick="document.getElementById('imageInput1').click();">
-            <p>Upload User Media</p>
-            <input type="file" id="imageInput1" accept="image/*" style="display: none;">
-            <div class="image-container" style="display: none;">
-                <img id="image1" style="max-width: 500px; max-height: 500px; display: block; margin: auto;"/>
-            </div>
+    <div id="container">
+        <div class="upload-section">
+            <button type="button" class="upload-button" id="uploadUserButton">Upload User Input</button>
+            <div class="image-preview" id="userImagePreview"></div>
+            <select class="dropdown-menu" id="userDropdown">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
         </div>
-        <div class="upload-block" id="uploadBlock2" onclick="document.getElementById('imageInput2').click();">
-            <p>Upload Reference Media</p>
-            <input type="file" id="imageInput2" accept="image/*" style="display: none;">
-            <div class="image-container" style="display: none;">
-                <img id="image2" style="max-width: 500px; max-height: 500px; display: block; margin: auto;"/>
-            </div>
+        
+        <div class="upload-section">
+            <button type="button" class="upload-button" id="uploadReferenceButton">Upload Reference Input</button>
+            <div class="image-preview" id="referenceImagePreview"></div>
+            <select class="dropdown-menu" id="referenceDropdown">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
         </div>
     </div>
-    <form action="/analyze" method="get">
-        <button class="analyze-button">Analyze</button>
-    </form>
+
+    <!-- Hidden File Inputs -->
+    <input type="file" id="userFileInput" accept="image/*" style="display: none;">
+    <input type="file" id="referenceFileInput" accept="image/*" style="display: none;">
+
     <script src="{{url_for('static', filename='dashboard.js')}}"></script>
 </body>
 </html>

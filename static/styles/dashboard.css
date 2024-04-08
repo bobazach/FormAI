@@ -1,39 +1,33 @@
-#upload-container {
+#container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 20px;
 }
 
-
-.upload-block {
-    width: 500px;
-    height: 500px;
-    border: 2px dashed #d50707;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 20px;
+.upload-section {
     text-align: center;
-    justify-content: center;
+}
+
+.upload-button {
+    margin-bottom: 10px;
+}
+
+.image-preview {
+    width: 400px;
+    height: 400px;
+    background-color: grey;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
-.upload-block:hover {
-    background-color: #f0f0f0;
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    display: none; /* Hide until an image is loaded */
 }
 
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    text-align: center;
+.dropdown-menu {
+    margin-bottom: 20px;
 }
-
-
-.image-container img {
-    max-width: 320px;
-    max-height: 240px;
-    display: block;
-    margin: auto;
-    width: 100%; /* Ensure it fills the container */
-    height: 100%; /* Ensure it fills the container */
-    object-fit: cover; /* This makes the image cover the space, while preserving its aspect ratio */
-}
-
