@@ -3,41 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/dashboard.css') }}">
 </head>
 <body>
-    <!-- <div class="navbar">
-        <p>FormAI</p>
-        <button id="newUpload">New Upload</button>
-    </div> -->
-    <div id="right-container">
-        <h2>Upload Your Media to get Started</h2>
-        <div id="upload-container">
-            <div class="upload-block" id="uploadBlock1" onclick="document.getElementById('imageInput1').click();">
-                <p>Upload User Media</p>
-                <input type="file" id="imageInput1" accept="image/*" style="display: none;">
-                <div class="image-container" style="display: none;">
-                    <img id="image1" style="max-width: 320px; max-height: 240px; display: block; margin: auto;"/>
-                </div>
-            </div>
-            <div class="upload-block" id="uploadBlock2" onclick="document.getElementById('imageInput2').click();">
-                <p>Upload Reference Media</p>
-                <input type="file" id="imageInput2" accept="image/*" style="display: none;">
-                <div class="image-container" style="display: none;">
-                    <img id="image2" style="max-width: 320px; max-height: 240px; display: block; margin: auto;"/>
-                </div>
+    <h2>Upload Your Media to get Started</h2>
+    <div id="upload-container">
+        <div class="upload-block" id="uploadBlock1" onclick="document.getElementById('imageInput1').click();">
+            <p>Upload User Media</p>
+            <input type="file" id="imageInput1" accept="image/*" style="display: none;">
+            <div class="image-container" style="display: none;">
+                <img id="image1" style="max-width: 500px; max-height: 500px; display: block; margin: auto;"/>
             </div>
         </div>
-        <button id="analyzeButton">Analyze</button>
-        <div id="results-container">
-            <p>Results</p>
-        </div>
-        <div id="chatbot-container">
-            <p>Chatbot</p>
+        <div class="upload-block" id="uploadBlock2" onclick="document.getElementById('imageInput2').click();">
+            <p>Upload Reference Media</p>
+            <input type="file" id="imageInput2" accept="image/*" style="display: none;">
+            <div class="image-container" style="display: none;">
+                <img id="image2" style="max-width: 500px; max-height: 500px; display: block; margin: auto;"/>
+            </div>
         </div>
     </div>
-    <!-- <script src="dashboard.js"></script> -->
-    
+    <form action="/analyze" method="get">
+        <button class="analyze-button">Analyze</button>
+    </form>
+    <script src="{{url_for('static', filename='dashboard.js')}}"></script>
 </body>
 </html>

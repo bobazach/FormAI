@@ -23,7 +23,6 @@ function loadImage(input, imgId, uploadBlockId) {
                 uploadInstructions.style.display = 'none';
             }
         }
-        
         reader.readAsDataURL(input.files[0]);
     }
 }
