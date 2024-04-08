@@ -1,4 +1,8 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
+from openai import OpenAI
+from gpt import generate_golf_swing_feedback
+
+client = OpenAI(api_key='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')
 
 app = Flask(__name__)
 
@@ -17,3 +21,13 @@ def dashboard():
 @app.route('/analyze')
 def analyze():
     return render_template('analyze.html')
+
+@app.route('/get-feedback', methods=['POST'])
+def get_feedback():
+    user_angles = request.json['user_angles']
+    pro_angles = request.json['pro_angles']
+
+    # function fdefined in gpt.py
+    feedback = generate_golf_swing_feedback(user_angles, pro_angles)
+    
+    return jsonify({'feedback': feedback})

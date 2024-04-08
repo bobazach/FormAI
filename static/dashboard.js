@@ -131,6 +131,53 @@ function initKeyPoints(canvas, dropdownId) {
     }
 }
 
+// display chatgpt suggestions
+async function displayChatGPTOutput() {
+    const userAngles = {
+        // Example values, replace these with actual data collection logic
+        'left_arm': 100,
+        'right_arm': 105,
+        'left_shoulder': 110,
+        'right_shoulder': 120
+    };
+
+    const proAngles = {
+        // Example values
+        'left_arm': 90,
+        'right_arm': 95,
+        'left_shoulder': 100,
+        'right_shoulder': 105
+    };
+
+    try {
+        const response = await fetch('/get-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_angles: userAngles, pro_angles: proAngles }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        
+        // Find the element where you want to display the response
+        const displayElement = document.getElementById('suggestionsDisplay');
+        // Set the content of this element to the ChatGPT response
+        displayElement.textContent = data.feedback;
+
+    } catch (error) {
+        console.error('Failed to fetch feedback:', error);
+    }
+}
+
+document.getElementById('showSuggestions').addEventListener('click', displayChatGPTOutput);
+
+
+
 // Event listeners for file inputs
 document.getElementById('uploadUserButton').addEventListener('click', function() {
     document.getElementById('userFileInput').click();
