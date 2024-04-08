@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/dashboard.css') }}">
 </head>
 <body>
-    <div id="navBar" class="nav-bar">
+    <!-- <div class="navbar">
         <p>FormAI</p>
         <button id="newUpload">New Upload</button>
-    </div>
+    </div> -->
     <div id="right-container">
-        <h2>Upload and Analyze Image Dimensions</h2>
+        <h2>Upload Your Media to get Started</h2>
         <div id="upload-container">
             <div class="upload-block" id="uploadBlock1" onclick="document.getElementById('imageInput1').click();">
                 <p>Upload User Media</p>
@@ -37,26 +37,7 @@
             <p>Chatbot</p>
         </div>
     </div>
-
-    <div id="results"></div>
-
-    <script src="test.js"></script>
+    <!-- <script src="dashboard.js"></script> -->
     
 </body>
 </html>
-<!-- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Upload Pages</title>
-    <link rel="stylesheet" href="test.css">
-</head>
-<body>
-    
-    <div id="pageContainer" class="page-container">
-    </div>
-    <script src="test.js"></script>
-</body>
-</html> -->

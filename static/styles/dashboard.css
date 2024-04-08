@@ -1,7 +1,19 @@
+/* .navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #0085ff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+} */
+
 #right-container {
     display: flex;
     flex-direction: column;
-    margin-left: 200px;
 }
 
 #upload-container {
@@ -13,7 +25,7 @@
 .upload-block {
     width: 320px;
     height: 240px;
-    border: 2px dashed #ccc;
+    border: 2px dashed #d50707;
     border-radius: 5px;
     cursor: pointer;
     margin: 20px;
@@ -25,7 +37,6 @@
 .upload-block:hover {
     background-color: #f0f0f0;
 }
-
 
 body {
     font-family: Arial, sans-serif;
@@ -41,15 +52,3 @@ body {
 } */
 
 
-.nav-bar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 200px;
-    height: 100%;
-    background-color: #0085ff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}

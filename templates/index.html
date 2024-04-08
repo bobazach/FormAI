@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORM AI</title>
-    <link rel="stylesheet" href="homepage.css">
+    <title>FORM AI</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
 </head>
 <body>
-    <img id="background-image" src="resources/background.png" alt="">
+    <img id="background-image" src="{{url_for('static', filename='images/background.png')}}" alt="">
     <div class="header">
         <div class="logo">
-            <img src="resources/FormAI_Logo.png" alt="FormAI Logo" width="30px" height="30px">
+            <img src="{{url_for('static', filename='images/FormAI_Logo.png')}}" alt="FormAI Logo" width="30px" height="30px">
             <p>ORM AI</p>
         </div>
-        <nav>
-            <button class="login-button">LOGIN</button>
-            <button class="get-started-button" onclick="window.location.href='dashboard.html';">GET STARTED</button>
+        <nav id="nav-buttons">
+            <form action="/login" method="get">
+                <button class="login-button">LOGIN</button>
+            </form>
+            <form action="/dashboard" method="get">
+                <button class="get-started-button">GET STARTED</button>
+            </form>
         </nav>
     </div>
     <div id="main-content">
@@ -27,7 +31,7 @@
             </div>
         </div>
         <div id="main-content-right">
-            <img src="resources/dashboard-preview.png" alt="Dashboard Preview">
+            <img src="{{url_for('static', filename='images/dashboard-preview.png')}}" alt="Dashboard Preview">
         </div>
     </div>
     <br>
@@ -35,19 +39,19 @@
         <h1>How it works</h1>
         <div id="step-list">
             <div class="step">
-                <img src="resources/upload.png" alt="">
+                <img src="{{url_for('static', filename='images/upload.png')}}" alt="">
                 <p>Upload your image/video along with a comparison image/video to improve your form</p>
             </div>
             <div class="step">
-                <img src="resources/graph.png" alt="">
+                <img src="{{url_for('static', filename='images/graph.png')}}" alt="">
                 <p>Let our <span class="highlight">AI/ML models </span>generate similarity scores and recommendations on how to improve your form</p>
             </div>
             <div class="step">
-                <img src="resources/interactive.png" alt="">
+                <img src="{{url_for('static', filename='images/interactive.png')}}" alt="">
                 <p>Interact with a <span class="highlight">fitness chatbot</span> to improve recommendations</p>
             </div>
             <div class="step">
-                <img src="resources/dashboard.png" alt="">
+                <img src="{{url_for('static', filename='images/dashboard.png')}}" alt="">
                 <p>View your current and previous uploads in a simple <span class="highlight">dashboard</span></p>
             </div>
         </div>

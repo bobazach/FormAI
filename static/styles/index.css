@@ -33,6 +33,11 @@ body {
 
 }
 
+.nav-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
 .login-button, .get-started-button, .features-button{
     width: 200px;
     height: 50px;
