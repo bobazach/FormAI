@@ -15,7 +15,6 @@ document.getElementById('referenceFileInput').addEventListener('change', functio
     readURL(this, 'referenceImagePreview', 'referenceDropdown');
 });
 
-// Event listener for video upload button
 document.getElementById('uploadVideoButton').addEventListener('click', function() {
     document.getElementById('videoFileInput').click();
 });
@@ -43,15 +42,33 @@ function loadVideo(input) {
 }
 
 function configureScrubber(video, scrubber) {
-    const frameRate = 30; // assuming 30 fps, adjust as necessary for your videos
+    const frameRate = 30; // assuming 30 fps
     const step = 1 / frameRate;
     scrubber.max = video.duration;
-    scrubber.step = step.toFixed(5); // Ensuring the step is appropriately precise
+    scrubber.step = step.toFixed(5);
 
     scrubber.oninput = function() {
-        video.currentTime = parseFloat(this.value); // Setting the current time to the scrubber's value
+        video.currentTime = parseFloat(this.value);
     };
 }
+
+document.getElementById('playPauseBtn').addEventListener('click', function() {
+    var video = document.getElementById('videoPreview');
+    if (video.paused || video.ended) {
+        video.play();
+    } else {
+        video.pause();
+    }
+});
+
+document.getElementById('zoomSlider').addEventListener('input', function() {
+    const zoomLevel = this.value;
+    const imagePreview = document.getElementById('userImagePreview');
+    const image = imagePreview.querySelector('img');
+    if (image) {
+        image.style.transform = `scale(${zoomLevel})` + (image.dataset.translate || "");
+    }
+});
 
 // Capture frame and display in the same way as image previews
 document.getElementById('captureFrame').addEventListener('click', function() {
@@ -71,8 +88,8 @@ document.getElementById('captureFrame').addEventListener('click', function() {
 
 function initCanvasWithImage(img, previewId, dropdownId) {
     var preview = document.getElementById(previewId);
-    preview.innerHTML = '';  // Clear any existing content
-    preview.appendChild(img);  // Add the new image
+    preview.innerHTML = '';
+    preview.appendChild(img);
 
     initCanvas(previewId, dropdownId);
 }
@@ -86,8 +103,8 @@ function readURL(input, previewId, dropdownId) {
             img.src = e.target.result;
 
             var preview = document.getElementById(previewId);
-            preview.innerHTML = '';  // Clear any existing content
-            preview.appendChild(img);  // Add the new image
+            preview.innerHTML = '';
+            preview.appendChild(img);
             initCanvas(previewId, dropdownId);
         }
 
@@ -108,6 +125,16 @@ function initCanvas(previewId, dropdownId) {
     initKeyPoints(canvas, dropdownId);
 }
 
+var mode = "drag"; // Default to drag mode
+document.getElementById('modeToggle').addEventListener('click', function() {
+    mode = (mode === "drag" ? "keypoints" : "drag");
+    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
+    var image = document.getElementById('userImagePreview').querySelector('img');
+    if (image) {
+        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
+    }
+});
+
 function initKeyPoints(canvas, dropdownId) {
     var ctx = canvas.getContext('2d');
     var points = {};
@@ -125,58 +152,80 @@ function initKeyPoints(canvas, dropdownId) {
 
     var dragObject = null;
     var dragStarted = false;
+    var initialX = 0, initialY = 0;
+    var translateX = 0, translateY = 0;
 
     canvas.addEventListener('mousedown', function(e) {
         var rect = canvas.getBoundingClientRect();
         var x = e.clientX - rect.left;
         var y = e.clientY - rect.top;
-        dragStarted = false;
-        for (var label in points) {
-            var point = points[label];
-            if (x >= point[0] - 5 && x <= point[0] + 5 && y >= point[1] - 5 && y <= point[1] + 5) {
-                dragObject = point;
+
+        if (mode === "drag") {
+            initialX = x;
+            initialY = y;
+            dragStarted = true;
+        } else {
+            dragObject = findDraggablePoint(x, y, points);
+            if (!dragObject && !points[dropdown.value]) {
+                points[dropdown.value] = [x, y];
+                redrawAllPoints();
+                updateDropdown();
+                displayCoordinates(points);
+            } else {
                 dragStarted = true;
-                return;
             }
-        }
-        if (!dragStarted && !points[dropdown.value]) {
-            points[dropdown.value] = [x, y];
-            redrawAllPoints();
-            updateDropdown();
-            displayCoordinates(points);
         }
     });
 
     canvas.addEventListener('mousemove', function(e) {
-        if (dragObject) {
-            var rect = canvas.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
-            dragObject[0] = x;
-            dragObject[1] = y;
-            redrawAllPoints();
-        }
-    });
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
 
-    canvas.addEventListener('mouseup', function(e) {
-        dragObject = null;
         if (dragStarted) {
-            displayCoordinates(points);
-            dragStarted = false; // Reset the flag after the drag is completed
+            if (mode === "drag" && dragObject == null) {
+                translateX = x - initialX;
+                translateY = y - initialY;
+                var img = canvas.parentNode.querySelector('img');
+                if (img) {
+                    img.dataset.translate = ` translate(${translateX}px, ${translateY}px)`;
+                    img.style.transform = img.style.transform.split('translate')[0] + img.dataset.translate;
+                }
+            } else if (mode === "keypoints" && dragObject) {
+                dragObject[0] = x;
+                dragObject[1] = y;
+                redrawAllPoints();
+            }
         }
     });
 
-    function redrawAllPoints() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+    canvas.addEventListener('mouseup', function() {
+        dragStarted = false;
+        dragObject = null;
+    });
+
+    function findDraggablePoint(x, y, points) {
         for (var label in points) {
             var point = points[label];
-            ctx.fillStyle = 'blue';
-            ctx.beginPath();
-            ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.fillText(label, point[0] + 10, point[1] + 3);
+            if (Math.abs(x - point[0]) <= 5 && Math.abs(y - point[1]) <= 5) {
+                return point;
+            }
         }
+        return null;
     }
+
+function redrawAllPoints() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas to remove old drawings
+    for (var label in points) {
+        var point = points[label];
+        ctx.fillStyle = 'blue'; // Set the color of the dot
+        ctx.beginPath(); // Start a new path for the dot
+        ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI); // Draw a circle representing the dot
+        ctx.fill(); // Fill the circle with the specified color
+        ctx.fillText(label, point[0] + 10, point[1] + 3); // Optionally, label the dot
+    }
+}
+
 
     function updateDropdown() {
         var allPlaced = true;  // Assume all points are placed initially
@@ -189,7 +238,6 @@ function initKeyPoints(canvas, dropdownId) {
         }
     
         if (allPlaced) {
-            // If all points are placed, show alert message
             alert('All dots are placed. Please drag them to their appropriate spots.');
         }
     }
