@@ -3,40 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload and Analyze</title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/dashboard.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/dashboard.css') }}">
 </head>
 <body>
     <div id="container">
-        <div class="upload-section">
-            <button type="button" class="upload-button" id="uploadUserButton">Upload User Input</button>
-            <div class="image-preview" id="userImagePreview" style="position: relative;"></div>
-            <select class="dropdown-menu" id="userDropdown"></select>
+        <div class="image-uploads">
+            <div class="upload-section">
+                <button type="button" class="upload-button" id="uploadUserButton">Upload User Input</button>
+                <div class="image-preview" id="userImagePreview" style="position: relative;"></div>
+                <select class="dropdown-menu" id="userDropdown"></select>
+            </div>
+            
+            <div class="upload-section">
+                <button type="button" class="upload-button" id="uploadReferenceButton">Upload Reference Input</button>
+                <div class="image-preview" id="referenceImagePreview" style="position: relative;"></div>
+                <select class="dropdown-menu" id="referenceDropdown"></select>
+            </div>
         </div>
-        
+
         <div class="upload-section">
-            <button type="button" class="upload-button" id="uploadReferenceButton">Upload Reference Input</button>
-            <div class="image-preview" id="referenceImagePreview" style="position: relative;"></div>
-            <select class="dropdown-menu" id="referenceDropdown"></select>
+            <button type="button" class="upload-button" id="uploadVideoButton">Upload Video</button>
+            <video id="videoPreview" width="300" height="300" style="display: none;"></video>
+            <button id="playPauseBtn">Play/Pause</button>
+            <div class="video-controls">
+                <input type="range" id="frameScrubber" value="0" min="0" max="100" step="0.04">
+                <button type="button" id="captureFrame">Capture Frame</button>
+            </div>
         </div>
 
         <div class="output-section">
             <h2>Coordinates:</h2>
             <pre id="coordsDisplay"></pre>
         </div>
+
+        <div class="output-section">
+            <button id="showSuggestions">Show Suggestions</button>
+            <h2>Suggestions:</h2>
+            <pre id="suggestionsDisplay"></pre>
+        </div>
+
+        <!-- Hidden File Inputs -->
+        <input type="file" id="userFileInput" accept="image/*" style="display: none;">
+        <input type="file" id="referenceFileInput" accept="image/*" style="display: none;">
+        <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
+
+        <script src="{{url_for('static', filename='dashboard.js')}}"></script>
     </div>
-
-    <!-- Added suggestions GPT -->
-    <button id="showSuggestions">Show Suggestions</button>
-    <div class="output-section">
-        <h2>Suggestions: </h2>
-        <pre id="suggestionsDisplay"></pre>
-    </div>
-
-
-    <!-- Hidden File Inputs -->
-    <input type="file" id="userFileInput" accept="image/*" style="display: none;">
-    <input type="file" id="referenceFileInput" accept="image/*" style="display: none;">
-
-    <script src="{{url_for('static', filename='dashboard.js')}}"></script>
 </body>
 </html>

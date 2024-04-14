@@ -1,3 +1,82 @@
+// Event listeners for file inputs
+document.getElementById('uploadUserButton').addEventListener('click', function() {
+    document.getElementById('userFileInput').click();
+});
+
+document.getElementById('userFileInput').addEventListener('change', function() {
+    readURL(this, 'userImagePreview', 'userDropdown');
+});
+
+document.getElementById('uploadReferenceButton').addEventListener('click', function() {
+    document.getElementById('referenceFileInput').click();
+});
+
+document.getElementById('referenceFileInput').addEventListener('change', function() {
+    readURL(this, 'referenceImagePreview', 'referenceDropdown');
+});
+
+// Event listener for video upload button
+document.getElementById('uploadVideoButton').addEventListener('click', function() {
+    document.getElementById('videoFileInput').click();
+});
+
+document.getElementById('videoFileInput').addEventListener('change', function() {
+    loadVideo(this);
+});
+
+function loadVideo(input) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        var url = URL.createObjectURL(file);
+        
+        var video = document.getElementById('videoPreview');
+        video.src = url;
+        video.style.display = 'block';
+        
+        var scrubber = document.getElementById('frameScrubber');
+        scrubber.style.display = 'block';
+
+        video.onloadedmetadata = function() {
+            configureScrubber(video, scrubber);
+        };
+    }
+}
+
+function configureScrubber(video, scrubber) {
+    const frameRate = 30; // assuming 30 fps, adjust as necessary for your videos
+    const step = 1 / frameRate;
+    scrubber.max = video.duration;
+    scrubber.step = step.toFixed(5); // Ensuring the step is appropriately precise
+
+    scrubber.oninput = function() {
+        video.currentTime = parseFloat(this.value); // Setting the current time to the scrubber's value
+    };
+}
+
+// Capture frame and display in the same way as image previews
+document.getElementById('captureFrame').addEventListener('click', function() {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var video = document.getElementById('videoPreview');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    var img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    
+    initCanvasWithImage(img, 'userImagePreview', 'userDropdown');
+});
+
+function initCanvasWithImage(img, previewId, dropdownId) {
+    var preview = document.getElementById(previewId);
+    preview.innerHTML = '';  // Clear any existing content
+    preview.appendChild(img);  // Add the new image
+
+    initCanvas(previewId, dropdownId);
+}
+
 function readURL(input, previewId, dropdownId) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -5,9 +84,6 @@ function readURL(input, previewId, dropdownId) {
         reader.onload = function (e) {
             var img = document.createElement('img');
             img.src = e.target.result;
-
-            // img.style.width = '100%';  // Ensure the image fits the container
-            // img.style.height = '100%';
 
             var preview = document.getElementById(previewId);
             preview.innerHTML = '';  // Clear any existing content
@@ -34,7 +110,7 @@ function initCanvas(previewId, dropdownId) {
 
 function initKeyPoints(canvas, dropdownId) {
     var ctx = canvas.getContext('2d');
-    var points = {}; // Stores {label: [x, y]}
+    var points = {};
     var labels = ["nose", "leftEye", "rightEye", "leftEar", "rightEar",
                   "leftShoulder", "rightShoulder", "leftElbow", "rightElbow",
                   "leftWrist", "rightWrist", "leftHip", "rightHip",
@@ -131,68 +207,3 @@ function initKeyPoints(canvas, dropdownId) {
         display.textContent = JSON.stringify(formattedPoints, null, 2);
     }
 }
-
-// display chatgpt suggestions
-async function displayChatGPTOutput() {
-    const userAngles = {
-        // Example values, replace these with actual data collection logic
-        'left_arm': 100,
-        'right_arm': 105,
-        'left_shoulder': 110,
-        'right_shoulder': 120
-    };
-
-    const proAngles = {
-        // Example values
-        'left_arm': 90,
-        'right_arm': 95,
-        'left_shoulder': 100,
-        'right_shoulder': 105
-    };
-
-    try {
-        const response = await fetch('/get-feedback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_angles: userAngles, pro_angles: proAngles }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        
-        // Find the element where you want to display the response
-        const displayElement = document.getElementById('suggestionsDisplay');
-        // Set the content of this element to the ChatGPT response
-        displayElement.textContent = data.feedback;
-
-    } catch (error) {
-        console.error('Failed to fetch feedback:', error);
-    }
-}
-
-document.getElementById('showSuggestions').addEventListener('click', displayChatGPTOutput);
-
-
-
-// Event listeners for file inputs
-document.getElementById('uploadUserButton').addEventListener('click', function() {
-    document.getElementById('userFileInput').click();
-});
-
-document.getElementById('userFileInput').addEventListener('change', function() {
-    readURL(this, 'userImagePreview', 'userDropdown');
-});
-
-document.getElementById('uploadReferenceButton').addEventListener('click', function() {
-    document.getElementById('referenceFileInput').click();
-});
-
-document.getElementById('referenceFileInput').addEventListener('change', function() {
-    readURL(this, 'referenceImagePreview', 'referenceDropdown');
-});
-
