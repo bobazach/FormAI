@@ -62,18 +62,20 @@ body, html {
 }
 
 .image-preview {
-    overflow: hidden; /* Prevents the image from overflowing the boundaries of its container */
-    position: relative;
+    display: flex;
+    overflow: hidden;
     width: 300px;
     height: 300px;
-    margin-bottom: 10px;
     border: 1px solid #000;
-    display: flex;
+    position: relative;
+    margin-bottom: 10px;
     justify-content: center;
     align-items: center;
 }
 
 .image-preview img {
-    position: absolute;
-    cursor: grab; /* Gives a hint that the image is draggable */
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
 }
