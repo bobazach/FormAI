@@ -15,24 +15,40 @@ document.getElementById('referenceFileInput').addEventListener('change', functio
     readURL(this, 'referenceImagePreview', 'referenceDropdown');
 });
 
-document.getElementById('uploadVideoButton').addEventListener('click', function() {
-    document.getElementById('videoFileInput').click();
+document.getElementById('uploadUserVideoButton').addEventListener('click', function() {
+    document.getElementById('userVideoFileInput').click();
 });
 
-document.getElementById('videoFileInput').addEventListener('change', function() {
-    loadVideo(this);
+document.getElementById('userVideoFileInput').addEventListener('change', function() {
+    loadVideo(this, 'userVideoPreview', 'frameScrubberUser');
 });
 
-function loadVideo(input) {
+document.getElementById('uploadReferenceVideoButton').addEventListener('click', function() {
+    document.getElementById('referenceVideoFileInput').click();
+});
+
+document.getElementById('referenceVideoFileInput').addEventListener('change', function() {
+    loadVideo(this, 'referenceVideoPreview', 'frameScrubberReference');
+});
+
+document.getElementById('zoomSliderUser').addEventListener('input', function() {
+    updateZoom('userImagePreview', this.value);
+});
+
+document.getElementById('zoomSliderReference').addEventListener('input', function() {
+    updateZoom('referenceImagePreview', this.value);
+});
+
+function loadVideo(input, videoId, scrubberId) {
     if (input.files && input.files[0]) {
         var file = input.files[0];
         var url = URL.createObjectURL(file);
         
-        var video = document.getElementById('videoPreview');
+        var video = document.getElementById(videoId);
         video.src = url;
         video.style.display = 'block';
         
-        var scrubber = document.getElementById('frameScrubber');
+        var scrubber = document.getElementById(scrubberId);
         scrubber.style.display = 'block';
 
         video.onloadedmetadata = function() {
@@ -41,8 +57,17 @@ function loadVideo(input) {
     }
 }
 
+function updateZoom(previewId, zoomLevel) {
+    const imagePreview = document.getElementById(previewId);
+    const image = imagePreview.querySelector('img');
+    if (image) {
+        const translate = image.dataset.translate || "";
+        image.style.transform = `scale(${zoomLevel})` + translate;
+    }
+}
+
 function configureScrubber(video, scrubber) {
-    const frameRate = 30; // assuming 30 fps
+    const frameRate = 30;
     const step = 1 / frameRate;
     scrubber.max = video.duration;
     scrubber.step = step.toFixed(5);
@@ -52,29 +77,36 @@ function configureScrubber(video, scrubber) {
     };
 }
 
-document.getElementById('playPauseBtn').addEventListener('click', function() {
-    var video = document.getElementById('videoPreview');
+document.getElementById('playPauseUserBtn').addEventListener('click', function() {
+    var video = document.getElementById('userVideoPreview');
+    togglePlayPause(video);
+});
+
+document.getElementById('playPauseReferenceBtn').addEventListener('click', function() {
+    var video = document.getElementById('referenceVideoPreview');
+    togglePlayPause(video);
+});
+
+function togglePlayPause(video) {
     if (video.paused || video.ended) {
         video.play();
     } else {
         video.pause();
     }
+}
+
+document.getElementById('captureFrameUser').addEventListener('click', function() {
+    captureFrame('userVideoPreview', 'userImagePreview', 'userDropdown');
 });
 
-document.getElementById('zoomSlider').addEventListener('input', function() {
-    const zoomLevel = this.value;
-    const imagePreview = document.getElementById('userImagePreview');
-    const image = imagePreview.querySelector('img');
-    if (image) {
-        image.style.transform = `scale(${zoomLevel})` + (image.dataset.translate || "");
-    }
+document.getElementById('captureFrameReference').addEventListener('click', function() {
+    captureFrame('referenceVideoPreview', 'referenceImagePreview', 'referenceDropdown');
 });
 
-// Capture frame and display in the same way as image previews
-document.getElementById('captureFrame').addEventListener('click', function() {
+function captureFrame(videoId, previewId, dropdownId) {
+    var video = document.getElementById(videoId);
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    var video = document.getElementById('videoPreview');
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -82,9 +114,9 @@ document.getElementById('captureFrame').addEventListener('click', function() {
 
     var img = document.createElement('img');
     img.src = canvas.toDataURL('image/png');
-    
-    initCanvasWithImage(img, 'userImagePreview', 'userDropdown');
-});
+
+    initCanvasWithImage(img, previewId, dropdownId);
+}
 
 function initCanvasWithImage(img, previewId, dropdownId) {
     var preview = document.getElementById(previewId);
@@ -125,17 +157,8 @@ function initCanvas(previewId, dropdownId) {
     initKeyPoints(canvas, dropdownId);
 }
 
-var mode = "drag"; // Default to drag mode
-document.getElementById('modeToggle').addEventListener('click', function() {
-    mode = (mode === "drag" ? "keypoints" : "drag");
-    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
-    var image = document.getElementById('userImagePreview').querySelector('img');
-    if (image) {
-        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
-    }
-});
-
 function initKeyPoints(canvas, dropdownId) {
+    // Previously defined code with modifications for dot switching
     var ctx = canvas.getContext('2d');
     var points = {};
     var labels = ["nose", "leftEye", "rightEye", "leftEar", "rightEar",
@@ -148,6 +171,19 @@ function initKeyPoints(canvas, dropdownId) {
         option.value = label;
         option.textContent = label;
         dropdown.appendChild(option);
+    });
+
+    // Dot placement and updating dropdown to switch to next unplaced dot
+    canvas.addEventListener('mousedown', function(e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+
+        if (mode === "drag") {
+            dragStart(e, x, y); // Define function for starting drag
+        } else {
+            placeOrDragKeypoint(e, x, y, points, ctx, dropdown); // Define function for placing or dragging keypoints
+        }
     });
 
     var dragObject = null;
@@ -214,18 +250,17 @@ function initKeyPoints(canvas, dropdownId) {
         return null;
     }
 
-function redrawAllPoints() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas to remove old drawings
-    for (var label in points) {
-        var point = points[label];
-        ctx.fillStyle = 'blue'; // Set the color of the dot
-        ctx.beginPath(); // Start a new path for the dot
-        ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI); // Draw a circle representing the dot
-        ctx.fill(); // Fill the circle with the specified color
-        ctx.fillText(label, point[0] + 10, point[1] + 3); // Optionally, label the dot
+    function redrawAllPoints() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        for (var label in points) {
+            var point = points[label];
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillText(label, point[0] + 10, point[1] + 3);
+        }
     }
-}
-
 
     function updateDropdown() {
         var allPlaced = true;  // Assume all points are placed initially
@@ -255,3 +290,22 @@ function redrawAllPoints() {
         display.textContent = JSON.stringify(formattedPoints, null, 2);
     }
 }
+
+var mode = "drag"; // Default to drag mode
+document.getElementById('modeToggleUser').addEventListener('click', function() {
+    mode = (mode === "drag" ? "keypoints" : "drag");
+    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
+    var image = document.getElementById('userImagePreview').querySelector('img');
+    if (image) {
+        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
+    }
+});
+
+document.getElementById('modeToggleReference').addEventListener('click', function() {
+    mode = (mode === "drag" ? "keypoints" : "drag");
+    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
+    var image = document.getElementById('referenceImagePreview').querySelector('img');
+    if (image) {
+        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
+    }
+});

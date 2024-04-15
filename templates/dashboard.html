@@ -14,7 +14,6 @@
                 <input type="range" id="zoomSliderUser" min="1" max="3" step="0.1" value="1" style="width: 80%;">
                 <select class="dropdown-menu" id="userDropdown"></select>
                 <button type="button" id="modeToggleUser">Switch to keypoints mode</button>
-                <button type="button" id="captureFrameUser">Capture Frame for User Input</button>
             </div>
             
             <div class="upload-section">
@@ -23,16 +22,24 @@
                 <input type="range" id="zoomSliderReference" min="1" max="3" step="0.1" value="1" style="width: 80%;">
                 <select class="dropdown-menu" id="referenceDropdown"></select>
                 <button type="button" id="modeToggleReference">Switch to keypoints mode</button>
-                <button type="button" id="captureFrameReference">Capture Frame for Reference Input</button>
             </div>
         </div>
 
-        <div class="upload-section">
-            <button type="button" class="upload-button" id="uploadVideoButton">Upload Video</button>
-            <video id="videoPreview" width="300" height="300" style="display: none;"></video>
-            <button id="playPauseBtn">Play/Pause</button>
-            <div class="video-controls">
-                <input type="range" id="frameScrubber" value="0" min="0" max="100" step="0.04">
+        <div class="video-uploads" style="display: flex; justify-content: space-around;">
+            <div class="upload-section">
+                <button type="button" class="upload-button" id="uploadUserVideoButton">Upload User Video</button>
+                <video id="userVideoPreview" width="300" height="300" style="display: none;"></video>
+                <button id="playPauseUserBtn">Play/Pause User Video</button>
+                <input type="range" id="frameScrubberUser" value="0" min="0" max="100" step="0.04">
+                <button type="button" id="captureFrameUser">Capture User Frame</button>
+            </div>
+
+            <div class="upload-section">
+                <button type="button" class="upload-button" id="uploadReferenceVideoButton">Upload Reference Video</button>
+                <video id="referenceVideoPreview" width="300" height="300" style="display: none;"></video>
+                <button id="playPauseReferenceBtn">Play/Pause Reference Video</button>
+                <input type="range" id="frameScrubberReference" value="0" min="0" max="100" step="0.04">
+                <button type="button" id="captureFrameReference">Capture Reference Frame</button>
             </div>
         </div>
 
@@ -50,7 +57,8 @@
         <!-- Hidden File Inputs -->
         <input type="file" id="userFileInput" accept="image/*" style="display: none;">
         <input type="file" id="referenceFileInput" accept="image/*" style="display: none;">
-        <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
+        <input type="file" id="userVideoFileInput" accept="video/*" style="display: none;">
+        <input type="file" id="referenceVideoFileInput" accept="video/*" style="display: none;">
 
         <script src="{{url_for('static', filename='dashboard.js')}}"></script>
     </div>
