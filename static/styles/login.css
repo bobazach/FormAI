@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-container {
+    width: 50%;  
+    background-color: white;
+    padding-left: 190px;
+    padding-right: 190px;
+    padding-top: 70px;
+    padding-bottom: 70px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form input {
+    margin-bottom: 20px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.login-form button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #5cb85c;
+    color: white;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background-color: #4cae4c;
+}
+
+.login-form p {
+    text-align: center;
+}
+
+/* If you use a separate register button */
+button[type="button"] {
+    background-color: #f0ad4e;
+    margin-top: 10px;
+}
+
+button[type="button"]:hover {
+    background-color: #ec971f;
+}
+
+
+.flash.error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.flash.success {
+    color: green;
+    margin-bottom: 10px;
+}
