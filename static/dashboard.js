@@ -309,3 +309,48 @@ document.getElementById('modeToggleReference').addEventListener('click', functio
         image.style.cursor = (mode === "drag" ? "move" : "crosshair");
     }
 });
+
+// Add the function into your existing dashboard.js
+
+async function displayChatGPTOutput() {
+    const userAngles = {
+        'left_arm': 100, // Example values
+        'right_arm': 105,
+        'left_shoulder': 110,
+        'right_shoulder': 120
+    };
+
+    const proAngles = {
+        'left_arm': 90, // Example values
+        'right_arm': 95,
+        'left_shoulder': 100,
+        'right_shoulder': 105
+    };
+
+    const displayElement = document.getElementById('suggestionsDisplay');
+    displayElement.innerHTML = '<div class="loader"></div>'; // Show loading spinner
+
+    try {
+        const response = await fetch('/get-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_angles: userAngles, pro_angles: proAngles }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        displayElement.textContent = data.feedback; // Display the response
+
+    } catch (error) {
+        console.error('Failed to fetch feedback:', error);
+        displayElement.textContent = 'Failed to fetch feedback: ' + error.message; // Show error message
+    }
+}
+
+document.getElementById('showSuggestions').addEventListener('click', displayChatGPTOutput);
+
