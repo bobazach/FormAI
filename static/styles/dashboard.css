@@ -2,80 +2,69 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    text-align: center;
+    background-color: #f4f4f4; /* Light background color for the page */
+    text-align: center; /* Center text by default */
 }
 
 #container {
-    width: auto;
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.image-uploads {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.upload-section {
-    flex: 1;
-    min-width: 300px;  /* Ensures that sections do not become too narrow */
-    border: 1px solid #ccc;
+    display: flex; /* Use flexbox to layout children side by side */
+    justify-content: center; /* Center the child elements horizontally */
+    align-items: start; /* Align children to the top */
+    max-width: 1200px; /* Max width to avoid overly wide layouts on large screens */
+    margin: 20px auto; /* Center the container on the page with vertical spacing */
     padding: 20px;
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    background: #fff; /* White background for content areas */
+    border-radius: 8px; /* Rounded corners for polished look */
 }
 
-.dropdown-menu, .video-controls input[type="range"] {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.video-controls input[type="range"], .video-controls button {
-    width: 90%;
-}
-
-.output-section {
-    width: 100%;
-    max-width: 600px;  /* Adjust max width as needed */
-    border: 1px solid #ccc;
+.side {
+    flex: 1; /* Flex item to take equal width */
     padding: 20px;
-    margin: 10px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: #fff; /* Consistent background with the container */
+    margin: 0 10px; /* Spacing between side elements */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Shadow for each side panel */
 }
 
-.output-section h2, .output-section pre {
-    margin-top: 0;
+.video-controls, .controls {
+    width: 100%; /* Full width controls */
+    margin-top: 20px; /* Space above the control section */
 }
 
-.output-section pre {
-    overflow: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-height: 300px;
+.upload-button, button {
+    width: 90%; /* Responsive width for better mobile usability */
+    padding: 8px 12px; /* Comfortable padding */
+    margin-top: 10px; /* Space between buttons */
+    border-radius: 4px; /* Rounded corners */
+    border: none; /* No border */
+    background-color: #5cb85c; /* Green background */
+    color: white; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
-.image-preview {
+.upload-button:hover, button:hover {
+    background-color: #4cae4c; /* Darker green on hover for better interaction feedback */
+}
+
+canvas {
+    width: 300px; /* Fixed width for canvas elements */
+    height: 300px; /* Fixed height for canvas elements */
+    border: 1px solid #ccc; /* Subtle border around the canvas */
+    margin-top: 10px; /* Margin above the canvas */
+    background-color: #ddd; /* Light grey background to distinguish canvas area */
+}
+
+input[type="range"] {
+    width: 90%; /* Responsive width for sliders */
+    margin: 10px 0; /* Vertical spacing for sliders */
+}
+
+.controls {
     display: flex;
-    overflow: hidden;
-    width: 300px;
-    height: 300px;
-    border: 1px solid #000;
-    position: relative;
-    margin-bottom: 10px;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-}
-
-.image-preview img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
 }

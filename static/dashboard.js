@@ -1,356 +1,439 @@
-// Event listeners for file inputs
-document.getElementById('uploadUserButton').addEventListener('click', function() {
-    document.getElementById('userFileInput').click();
-});
-
-document.getElementById('userFileInput').addEventListener('change', function() {
-    readURL(this, 'userImagePreview', 'userDropdown');
-});
-
-document.getElementById('uploadReferenceButton').addEventListener('click', function() {
-    document.getElementById('referenceFileInput').click();
-});
-
-document.getElementById('referenceFileInput').addEventListener('change', function() {
-    readURL(this, 'referenceImagePreview', 'referenceDropdown');
-});
-
-document.getElementById('uploadUserVideoButton').addEventListener('click', function() {
+document.getElementById('uploadUserVideoButton').addEventListener('click', () => {
     document.getElementById('userVideoFileInput').click();
 });
 
-document.getElementById('userVideoFileInput').addEventListener('change', function() {
-    loadVideo(this, 'userVideoPreview', 'frameScrubberUser');
+document.getElementById('userVideoFileInput').addEventListener('change', event => {
+    const file = event.target.files[0];
+    const videoElement = document.getElementById('userVideoPreview');
+    videoElement.src = URL.createObjectURL(file);
+    videoElement.hidden = false;
+    videoElement.onloadedmetadata = () => {
+        setupScrubber(videoElement.duration);
+        document.getElementById('frameScrubberUser').style.display = 'block';
+        document.getElementById('captureFrameUser').style.display = 'block';
+        document.getElementById('playPauseUserBtn').style.display = 'block';
+    };
 });
 
-document.getElementById('uploadReferenceVideoButton').addEventListener('click', function() {
-    document.getElementById('referenceVideoFileInput').click();
-});
-
-document.getElementById('referenceVideoFileInput').addEventListener('change', function() {
-    loadVideo(this, 'referenceVideoPreview', 'frameScrubberReference');
-});
-
-document.getElementById('zoomSliderUser').addEventListener('input', function() {
-    updateZoom('userImagePreview', this.value);
-});
-
-document.getElementById('zoomSliderReference').addEventListener('input', function() {
-    updateZoom('referenceImagePreview', this.value);
-});
-
-function loadVideo(input, videoId, scrubberId) {
-    if (input.files && input.files[0]) {
-        var file = input.files[0];
-        var url = URL.createObjectURL(file);
-        
-        var video = document.getElementById(videoId);
-        video.src = url;
-        video.style.display = 'block';
-        
-        var scrubber = document.getElementById(scrubberId);
-        scrubber.style.display = 'block';
-
-        video.onloadedmetadata = function() {
-            configureScrubber(video, scrubber);
-        };
-    }
+function setupScrubber(duration) {
+    const scrubber = document.getElementById('frameScrubberUser');
+    const frameRate = 30; // Assuming 30 fps
+    scrubber.max = duration * frameRate;
+    scrubber.step = 1 / frameRate;
+    scrubber.addEventListener('input', () => {
+        const video = document.getElementById('userVideoPreview');
+        video.currentTime = scrubber.value / frameRate;
+    });
 }
 
-function updateZoom(previewId, zoomLevel) {
-    const imagePreview = document.getElementById(previewId);
-    const image = imagePreview.querySelector('img');
-    if (image) {
-        const translate = image.dataset.translate || "";
-        image.style.transform = `scale(${zoomLevel})` + translate;
+document.getElementById('captureFrameUser').addEventListener('click', () => {
+    captureFrame();
+    hideVideoControls();
+});
+
+function captureFrame() {
+    const video = document.getElementById('userVideoPreview');
+    const canvas = document.getElementById('userCanvas');
+    const ctx = canvas.getContext('2d');
+    const aspectRatio = video.videoWidth / video.videoHeight;
+    let newWidth = canvas.width;
+    let newHeight = newWidth / aspectRatio;
+    if (newHeight > canvas.height) {
+        newHeight = canvas.height;
+        newWidth = newHeight * aspectRatio;
     }
+    const xOffset = (canvas.width - newWidth) / 2;
+    const yOffset = (canvas.height - newHeight) / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, xOffset, yOffset, newWidth, newHeight);
+    canvas.hidden = false;
+
+    // Unhide the Edit Image button and keypoints dropdown
+    document.getElementById('editImageBtn').hidden = false;
+    document.getElementById('keypointsBtn').hidden = false;
+    document.getElementById('keypointType').hidden = false;
 }
 
-function configureScrubber(video, scrubber) {
-    const frameRate = 30;
-    const step = 1 / frameRate;
-    scrubber.max = video.duration;
-    scrubber.step = step.toFixed(5);
+function hideVideoControls() {
+    document.getElementById('userVideoPreview').hidden = true;
+    document.getElementById('frameScrubberUser').style.display = 'none';
+    document.getElementById('captureFrameUser').style.display = 'none';
+    document.getElementById('playPauseUserBtn').style.display = 'none';
+}
 
-    scrubber.oninput = function() {
-        video.currentTime = parseFloat(this.value);
+document.getElementById('editImageBtn').addEventListener('click', () => {
+    activateImageEditing();
+});
+
+let dragging = false;
+let lastX = 0;
+let lastY = 0;
+let translateX = 0;
+let translateY = 0;
+let scale = 1;
+
+function activateImageEditing() {
+    const canvas = document.getElementById('userCanvas');
+    canvas.style.cursor = 'grab';
+
+    canvas.onmousedown = function(e) {
+        dragging = true;
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        canvas.style.cursor = 'grabbing';
+    };
+
+    canvas.onmouseup = function(e) {
+        dragging = false;
+        canvas.style.cursor = 'grab';
+    };
+
+    canvas.onmouseout = canvas.onmouseup;
+
+    canvas.onmousemove = function(e) {
+        if (dragging) {
+            const dx = e.offsetX - lastX;
+            const dy = e.offsetY - lastY;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+            translateX += dx;
+            translateY += dy;
+            redrawCanvas();
+        }
+    };
+
+    canvas.onwheel = function(e) {
+        e.preventDefault();
+        const zoomIntensity = 0.1;
+        const factor = Math.pow(1 + zoomIntensity, -e.deltaY * 0.01);
+        scale *= factor;
+        redrawCanvas();
     };
 }
 
-document.getElementById('playPauseUserBtn').addEventListener('click', function() {
-    var video = document.getElementById('userVideoPreview');
-    togglePlayPause(video);
-});
-
-document.getElementById('playPauseReferenceBtn').addEventListener('click', function() {
-    var video = document.getElementById('referenceVideoPreview');
-    togglePlayPause(video);
-});
-
-function togglePlayPause(video) {
-    if (video.paused || video.ended) {
-        video.play();
-    } else {
-        video.pause();
+function redrawCanvas() {
+    const canvas = document.getElementById('userCanvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('userVideoPreview');
+    const aspectRatio = video.videoWidth / video.videoHeight;
+    let newWidth = canvas.width * scale;
+    let newHeight = newWidth / aspectRatio;
+    if (newHeight > canvas.height * scale) {
+        newHeight = canvas.height * scale;
+        newWidth = newHeight * aspectRatio;
     }
+    const xOffset = (canvas.width - newWidth) / 2 + translateX;
+    const yOffset = (canvas.height - newHeight) / 2 + translateY;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, xOffset, yOffset, newWidth, newHeight);
 }
 
-document.getElementById('captureFrameUser').addEventListener('click', function() {
-    captureFrame('userVideoPreview', 'userImagePreview', 'userDropdown');
+
+document.getElementById('keypointsBtn').addEventListener('click', () => {
+    initializeKeypointMode();
 });
 
-document.getElementById('captureFrameReference').addEventListener('click', function() {
-    captureFrame('referenceVideoPreview', 'referenceImagePreview', 'referenceDropdown');
-});
-
-function captureFrame(videoId, previewId, dropdownId) {
-    var video = document.getElementById(videoId);
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    var img = document.createElement('img');
-    img.src = canvas.toDataURL('image/png');
-
-    initCanvasWithImage(img, previewId, dropdownId);
-}
-
-function initCanvasWithImage(img, previewId, dropdownId) {
-    var preview = document.getElementById(previewId);
-    preview.innerHTML = '';
-    preview.appendChild(img);
-
-    initCanvas(previewId, dropdownId);
-}
-
-function readURL(input, previewId, dropdownId) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-            var img = document.createElement('img');
-            img.src = e.target.result;
-
-            var preview = document.getElementById(previewId);
-            preview.innerHTML = '';
-            preview.appendChild(img);
-            initCanvas(previewId, dropdownId);
-        }
-
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function initCanvas(previewId, dropdownId) {
-    var preview = document.getElementById(previewId);
-    var canvas = document.createElement('canvas');
-    canvas.width = preview.offsetWidth;
-    canvas.height = preview.offsetHeight;
-    canvas.style.position = 'absolute';
-    canvas.style.left = '0';
-    canvas.style.top = '0';
-    preview.appendChild(canvas);
-
-    initKeyPoints(canvas, dropdownId);
-}
-
-function initKeyPoints(canvas, dropdownId) {
-    // Previously defined code with modifications for dot switching
-    var ctx = canvas.getContext('2d');
-    var points = {};
-    var labels = ["nose", "leftEye", "rightEye", "leftEar", "rightEar",
+let keypoints = {};
+let allKeypointTypes = ["nose", "leftEye", "rightEye", "leftEar", "rightEar",
                   "leftShoulder", "rightShoulder", "leftElbow", "rightElbow",
                   "leftWrist", "rightWrist", "leftHip", "rightHip",
                   "leftKnee", "rightKnee", "leftAnkle", "rightAnkle"];
-    var dropdown = document.getElementById(dropdownId);
-    labels.forEach(function(label) {
-        var option = document.createElement('option');
-        option.value = label;
-        option.textContent = label;
-        dropdown.appendChild(option);
-    });
 
-    // Dot placement and updating dropdown to switch to next unplaced dot
-    canvas.addEventListener('mousedown', function(e) {
-        var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+function initializeKeypointMode() {
+    const canvas = document.getElementById('userCanvas');
+    deactivateImageEditing();
+    canvas.style.cursor = 'crosshair';
+    canvas.addEventListener('click', placeKeypoint);
+}
 
-        if (mode === "drag") {
-            dragStart(e, x, y); // Define function for starting drag
-        } else {
-            placeOrDragKeypoint(e, x, y, points, ctx, dropdown); // Define function for placing or dragging keypoints
-        }
-    });
+function placeKeypoint(event) {
+    const canvas = document.getElementById('userCanvas');
+    const ctx = canvas.getContext('2d');
+    const dropdown = document.getElementById('keypointType');
+    const type = dropdown.value;
+    if (!keypoints[type]) {
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(event.offsetX, event.offsetY, 3, 0, 2 * Math.PI);  // Smaller dot
+        ctx.fill();
+        ctx.font = "12px Arial";
+        ctx.fillText(type, event.offsetX + 5, event.offsetY - 5); // Label next to the dot
 
-    var dragObject = null;
-    var dragStarted = false;
-    var initialX = 0, initialY = 0;
-    var translateX = 0, translateY = 0;
-
-    canvas.addEventListener('mousedown', function(e) {
-        var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-
-        if (mode === "drag") {
-            initialX = x;
-            initialY = y;
-            dragStarted = true;
-        } else {
-            dragObject = findDraggablePoint(x, y, points);
-            if (!dragObject && !points[dropdown.value]) {
-                points[dropdown.value] = [x, y];
-                redrawAllPoints();
-                updateDropdown();
-                displayCoordinates(points);
-            } else {
-                dragStarted = true;
-            }
-        }
-    });
-
-    canvas.addEventListener('mousemove', function(e) {
-        var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-
-        if (dragStarted) {
-            if (mode === "drag" && dragObject == null) {
-                translateX = x - initialX;
-                translateY = y - initialY;
-                var img = canvas.parentNode.querySelector('img');
-                if (img) {
-                    img.dataset.translate = ` translate(${translateX}px, ${translateY}px)`;
-                    img.style.transform = img.style.transform.split('translate')[0] + img.dataset.translate;
-                }
-            } else if (mode === "keypoints" && dragObject) {
-                dragObject[0] = x;
-                dragObject[1] = y;
-                redrawAllPoints();
-            }
-        }
-    });
-
-    canvas.addEventListener('mouseup', function() {
-        dragStarted = false;
-        dragObject = null;
-    });
-
-    function findDraggablePoint(x, y, points) {
-        for (var label in points) {
-            var point = points[label];
-            if (Math.abs(x - point[0]) <= 5 && Math.abs(y - point[1]) <= 5) {
-                return point;
-            }
-        }
-        return null;
-    }
-
-    function redrawAllPoints() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-        for (var label in points) {
-            var point = points[label];
-            ctx.fillStyle = 'blue';
-            ctx.beginPath();
-            ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.fillText(label, point[0] + 10, point[1] + 3);
-        }
-    }
-
-    function updateDropdown() {
-        var allPlaced = true;  // Assume all points are placed initially
-        for (var i = 0; i < dropdown.options.length; i++) {
-            if (!points[dropdown.options[i].value]) {
-                dropdown.selectedIndex = i;
-                allPlaced = false;  // Found an unplaced point, set flag to false
-                break;
-            }
-        }
-    
-        if (allPlaced) {
-            alert('All dots are placed. Please drag them to their appropriate spots.');
-        }
-    }
-
-    function displayCoordinates(points) {
-        var display = document.getElementById('coordsDisplay');
-        var formattedPoints = {};
-        for (var label in points) {
-            var point = points[label];
-            formattedPoints[label] = [
-                parseFloat(point[0].toFixed(2)),
-                parseFloat(point[1].toFixed(2))
-            ];
-        }
-        display.textContent = JSON.stringify(formattedPoints, null, 2);
+        keypoints[type] = { x: event.offsetX, y: event.offsetY };
+        updateDropdown(dropdown);
+        checkAllKeypointsPlaced();
+    } else {
+        alert('Keypoint for ' + type + ' already placed.');
     }
 }
 
-var mode = "drag"; // Default to drag mode
-document.getElementById('modeToggleUser').addEventListener('click', function() {
-    mode = (mode === "drag" ? "keypoints" : "drag");
-    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
-    var image = document.getElementById('userImagePreview').querySelector('img');
-    if (image) {
-        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
-    }
-});
-
-document.getElementById('modeToggleReference').addEventListener('click', function() {
-    mode = (mode === "drag" ? "keypoints" : "drag");
-    this.textContent = `Switch to ${mode === "drag" ? "keypoints" : "drag"} mode`;
-    var image = document.getElementById('referenceImagePreview').querySelector('img');
-    if (image) {
-        image.style.cursor = (mode === "drag" ? "move" : "crosshair");
-    }
-});
-
-// Add the function into your existing dashboard.js
-
-async function displayChatGPTOutput() {
-    const userAngles = {
-        'left_arm': 100, // Example values
-        'right_arm': 105,
-        'left_shoulder': 110,
-        'right_shoulder': 120
-    };
-
-    const proAngles = {
-        'left_arm': 90, // Example values
-        'right_arm': 95,
-        'left_shoulder': 100,
-        'right_shoulder': 105
-    };
-
-    const displayElement = document.getElementById('suggestionsDisplay');
-    displayElement.innerHTML = '<div class="loader"></div>'; // Show loading spinner
-
-    try {
-        const response = await fetch('/get-feedback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_angles: userAngles, pro_angles: proAngles }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        displayElement.textContent = data.feedback; // Display the response
-
-    } catch (error) {
-        console.error('Failed to fetch feedback:', error);
-        displayElement.textContent = 'Failed to fetch feedback: ' + error.message; // Show error message
+function updateDropdown(dropdown) {
+    let currentIndex = dropdown.selectedIndex;
+    if (currentIndex < dropdown.options.length - 1) {
+        dropdown.selectedIndex = currentIndex + 1;
     }
 }
 
-document.getElementById('showSuggestions').addEventListener('click', displayChatGPTOutput);
+function checkAllKeypointsPlaced() {
+    if (Object.keys(keypoints).length === allKeypointTypes.length) {
+        alert('All keypoints have been placed.');
+    }
+}
 
+function deactivateImageEditing() {
+    const canvas = document.getElementById('userCanvas');
+    canvas.onmousedown = null;
+    canvas.onmouseup = null;
+    canvas.onmousemove = null;
+    canvas.onwheel = null;
+    canvas.style.cursor = 'default';
+}
+
+function checkAllKeypointsPlaced() {
+    if (Object.keys(keypoints).length === allKeypointTypes.length) {
+        document.getElementById('saveKeypointsBtn').hidden = false;
+        alert('All keypoints have been placed.');
+    }
+}
+
+function saveKeypoints() {
+    console.log('Keypoints saved:', keypoints);
+    localStorage.setItem('keypointsData', JSON.stringify(keypoints));
+    alert('Keypoints saved successfully!');
+    resetApplication();
+}
+
+function resetApplication() {
+    const canvas = document.getElementById('userCanvas');
+    canvas.hidden = true;
+    document.getElementById('saveKeypointsBtn').hidden = true;
+    document.getElementById('keypointsBtn').hidden = true;
+
+    // Re-enable video controls instead of hiding them
+    document.getElementById('userVideoPreview').hidden = false;
+    document.getElementById('frameScrubberUser').style.display = 'block';
+    document.getElementById('captureFrameUser').style.display = 'block';
+    document.getElementById('playPauseUserBtn').style.display = 'block';
+    document.getElementById('editImageBtn').hidden = true;
+    document.getElementById('keypointsBtn').hidden = true;
+    document.getElementById('keypointType').hidden = true;
+
+    keypoints = {};  // Reset keypoints
+    // No need to hide the upload button as we're not prompting for a new upload
+}
+function deactivateImageEditing() {
+    const canvas = document.getElementById('userCanvas');
+    canvas.onmousedown = null;
+    canvas.onmouseup = null;
+    canvas.onmousemove = null;
+    canvas.onwheel = null;
+    canvas.style.cursor = 'default';
+}
+
+// Event listener for uploading reference video
+document.getElementById('uploadReferenceVideoButton').addEventListener('click', () => {
+    document.getElementById('referenceVideoFileInput').click();
+});
+
+// Handle video file change for reference video
+document.getElementById('referenceVideoFileInput').addEventListener('change', event => {
+    const file = event.target.files[0];
+    const videoElement = document.getElementById('referenceVideoPreview');
+    videoElement.src = URL.createObjectURL(file);
+    videoElement.hidden = false;
+    videoElement.onloadedmetadata = () => {
+        setupScrubberReference(videoElement.duration);
+        document.getElementById('frameScrubberReference').style.display = 'block';
+        document.getElementById('captureFrameReference').style.display = 'block';
+        document.getElementById('playPauseReferenceBtn').style.display = 'block';
+    };
+});
+
+// Setup scrubber for reference video
+function setupScrubberReference(duration) {
+    const scrubber = document.getElementById('frameScrubberReference');
+    const frameRate = 30; // Assuming 30 fps for simplicity
+    scrubber.max = duration * frameRate;
+    scrubber.addEventListener('input', () => {
+        const video = document.getElementById('referenceVideoPreview');
+        video.currentTime = scrubber.value / frameRate;
+    });
+}
+
+// Capture frame for reference video
+document.getElementById('captureFrameReference').addEventListener('click', () => {
+    captureFrameReference();
+    hideVideoControlsReference();
+});
+
+function captureFrameReference() {
+    const video = document.getElementById('referenceVideoPreview');
+    const canvas = document.getElementById('referenceCanvas');
+    const ctx = canvas.getContext('2d');
+    const aspectRatio = video.videoWidth / video.videoHeight;
+    let newWidth = canvas.width;
+    let newHeight = newWidth / aspectRatio;
+    if (newHeight > canvas.height) {
+        newHeight = canvas.height;
+        newWidth = newHeight * aspectRatio;
+    }
+    const xOffset = (canvas.width - newWidth) / 2;
+    const yOffset = (canvas.height - newHeight) / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, xOffset, yOffset, newWidth, newHeight);
+    canvas.hidden = false;
+
+    // Unhide the Edit Image button and keypoints dropdown for the reference side
+    document.getElementById('editReferenceBtn').hidden = false;
+    document.getElementById('keypointsReferenceBtn').hidden = false;
+    document.getElementById('keypointReferenceType').hidden = false;
+}
+
+// Hide controls after capturing frame for reference video
+function hideVideoControlsReference() {
+    document.getElementById('referenceVideoPreview').hidden = true;
+    document.getElementById('frameScrubberReference').style.display = 'none';
+    document.getElementById('captureFrameReference').style.display = 'none';
+    document.getElementById('playPauseReferenceBtn').style.display = 'none';
+}
+
+// Edit image for reference video
+document.getElementById('editReferenceBtn').addEventListener('click', () => {
+    activateImageEditingReference();
+});
+
+function activateImageEditingReference() {
+    const canvas = document.getElementById('referenceCanvas');
+    canvas.style.cursor = 'grab';
+    canvas.onmousedown = function(e) {
+        dragging = true;
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        canvas.style.cursor = 'grabbing';
+    };
+    canvas.onmouseup = function(e) {
+        dragging = false;
+        canvas.style.cursor = 'grab';
+    };
+    canvas.onmouseout = canvas.onmouseup;
+    canvas.onmousemove = function(e) {
+        if (dragging) {
+            const dx = e.offsetX - lastX;
+            const dy = e.offsetY - lastY;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+            translateX += dx;
+            translateY += dy;
+            redrawCanvasReference();
+        }
+    };
+    canvas.onwheel = function(e) {
+        e.preventDefault();
+        const zoomIntensity = 0.1;
+        const factor = Math.pow(1 + zoomIntensity, -e.deltaY * 0.01);
+        scale *= factor;
+        redrawCanvasReference();
+    };
+}
+
+function redrawCanvasReference() {
+    const canvas = document.getElementById('referenceCanvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('referenceVideoPreview');
+    const aspectRatio = video.videoWidth / video.videoHeight;
+    let newWidth = canvas.width * scale;
+    let newHeight = newWidth / aspectRatio;
+    if (newHeight > canvas.height * scale) {
+        newHeight = canvas.height * scale;
+        newWidth = newHeight * aspectRatio;
+    }
+    const xOffset = (canvas.width - newWidth) / 2 + translateX;
+    const yOffset = (canvas.height - newHeight) / 2 + translateY;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, xOffset, yOffset, newWidth, newHeight);
+}
+
+// Initialize keypoint placement mode for reference video
+document.getElementById('keypointsReferenceBtn').addEventListener('click', () => {
+    initializeKeypointModeReference();
+});
+
+function initializeKeypointModeReference() {
+    const canvas = document.getElementById('referenceCanvas');
+    deactivateImageEditingReference();
+    canvas.style.cursor = 'crosshair';
+    canvas.addEventListener('click', placeKeypointReference);
+}
+
+function placeKeypointReference(event) {
+    const canvas = document.getElementById('referenceCanvas');
+    const ctx = canvas.getContext('2d');
+    const dropdown = document.getElementById('keypointReferenceType');
+    const type = dropdown.value;
+    if (!keypointsReference[type]) {
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(event.offsetX, event.offsetY, 3, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.font = "12px Arial";
+        ctx.fillText(type, event.offsetX + 5, event.offsetY - 5);
+
+        keypointsReference[type] = { x: event.offsetX, y: event.offsetY };
+        updateDropdownReference(dropdown);
+        checkAllKeypointsPlacedReference();
+    } else {
+        alert('Keypoint for ' + type + ' already placed.');
+    }
+}
+
+function updateDropdownReference(dropdown) {
+    let currentIndex = dropdown.selectedIndex;
+    if (currentIndex < dropdown.options.length - 1) {
+        dropdown.selectedIndex = currentIndex + 1;
+    }
+}
+
+function checkAllKeypointsPlacedReference() {
+    if (Object.keys(keypointsReference).length === allKeypointTypes.length) {
+        document.getElementById('saveKeypointsReferenceBtn').hidden = false;
+        alert('All keypoints have been placed.');
+    }
+}
+
+let keypointsReference = {};  // Initialize a separate keypoints storage for the reference side
+
+// Save keypoints for reference video
+document.getElementById('saveKeypointsReferenceBtn').addEventListener('click', () => {
+    console.log('Keypoints saved for reference:', keypointsReference);
+    localStorage.setItem('keypointsDataReference', JSON.stringify(keypointsReference));
+    alert('Keypoints saved successfully for reference!');
+    resetApplicationReference();
+});
+
+function resetApplicationReference() {
+    const canvas = document.getElementById('referenceCanvas');
+    canvas.hidden = true;
+    document.getElementById('saveKeypointsReferenceBtn').hidden = true;
+    document.getElementById('keypointsReferenceBtn').hidden = true;
+
+    // Re-enable video controls instead of hiding them
+    document.getElementById('referenceVideoPreview').hidden = false;
+    document.getElementById('frameScrubberReference').style.display = 'block';
+    document.getElementById('captureFrameReference').style.display = 'block';
+    document.getElementById('playPauseReferenceBtn').style.display = 'block';
+    document.getElementById('editReferenceBtn').hidden = true;
+    document.getElementById('keypointsReferenceBtn').hidden = true;
+    document.getElementById('keypointReferenceType').hidden = true;
+
+    keypointsReference = {};  // Reset keypoints for the reference side
+    // No need to hide the upload button as we're not prompting for a new upload
+}
+// Disable image editing for the reference canvas
+function deactivateImageEditingReference() {
+    const canvas = document.getElementById('referenceCanvas');
+    canvas.onmousedown = null;
+    canvas.onmouseup = null;
+    canvas.onmousemove = null;
+    canvas.onwheel = null;
+    canvas.style.cursor = 'default';
+}

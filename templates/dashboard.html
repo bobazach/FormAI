@@ -3,64 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload and Analyze</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/dashboard.css') }}">
 </head>
 <body>
-    <div id="container">
-        <div class="image-uploads">
-            <div class="upload-section">
-                <button type="button" class="upload-button" id="uploadUserButton">Upload User Input</button>
-                <div class="image-preview" id="userImagePreview" style="position: relative;"></div>
-                <input type="range" id="zoomSliderUser" min="1" max="3" step="0.1" value="1" style="width: 80%;">
-                <select class="dropdown-menu" id="userDropdown"></select>
-                <button type="button" id="modeToggleUser">Switch to keypoints mode</button>
-            </div>
-            
-            <div class="upload-section">
-                <button type="button" class="upload-button" id="uploadReferenceButton">Upload Reference Input</button>
-                <div class="image-preview" id="referenceImagePreview" style="position: relative;"></div>
-                <input type="range" id="zoomSliderReference" min="1" max="3" step="0.1" value="1" style="width: 80%;">
-                <select class="dropdown-menu" id="referenceDropdown"></select>
-                <button type="button" id="modeToggleReference">Switch to keypoints mode</button>
+    <main id="container">
+        <div class="side user-side">
+            <!-- User Video Controls and Canvas -->
+            <section class="video-controls">
+                <button class="upload-button" id="uploadUserVideoButton">Upload User Video</button>
+                <input type="file" id="userVideoFileInput" accept="video/*" style="display:none;">
+                <video id="userVideoPreview" width="300" height="300" hidden></video>
+                <button id="playPauseUserBtn" style="display:none;">Play/Pause</button>
+                <input type="range" id="frameScrubberUser" style="display:none;" value="0" min="0" max="100" step="1">
+                <button id="captureFrameUser" style="display:none;">Capture Frame</button>
+            </section>
+            <canvas id="userCanvas" width="300" height="300" hidden></canvas>
+            <div class="controls">
+                <button id="editImageBtn" hidden>Edit Image</button>
+                <button id="keypointsBtn" hidden>Place Keypoints</button>
+                <select id="keypointType" hidden>
+                    <option value="nose">Nose</option>
+                    <option value="leftEye">Left Eye</option>
+                    <option value="rightEye">Right Eye</option>
+                    <option value="leftEar">Left Ear</option>
+                    <option value="rightEar">Right Ear</option>
+                    <option value="leftShoulder">Left Shoulder</option>
+                    <option value="rightShoulder">Right Shoulder</option>
+                    <option value="leftElbow">Left Elbow</option>
+                    <option value="rightElbow">Right Elbow</option>
+                    <option value="leftWrist">Left Wrist</option>
+                    <option value="rightWrist">Right Wrist</option>
+                    <option value="leftHip">Left Hip</option>
+                    <option value="rightHip">Right Hip</option>
+                    <option value="leftKnee">Left Knee</option>
+                    <option value="rightKnee">Right Knee</option>
+                    <option value="leftAnkle">Left Ankle</option>
+                    <option value="rightAnkle">Right Ankle</option>
+                </select>
+                <button id="saveKeypointsBtn" hidden onclick="saveKeypoints()">Save Keypoints</button>
             </div>
         </div>
-
-        <div class="video-uploads" style="display: flex; justify-content: space-around;">
-            <div class="upload-section">
-                <button type="button" class="upload-button" id="uploadUserVideoButton">Upload User Video</button>
-                <video id="userVideoPreview" width="300" height="300" style="display: none;"></video>
-                <button id="playPauseUserBtn">Play/Pause User Video</button>
-                <input type="range" id="frameScrubberUser" value="0" min="0" max="100" step="0.04">
-                <button type="button" id="captureFrameUser">Capture User Frame</button>
+        <div class="side reference-side">
+            <!-- Reference Video Controls and Canvas -->
+            <section class="video-controls">
+                <button class="upload-button" id="uploadReferenceVideoButton">Upload Reference Video</button>
+                <input type="file" id="referenceVideoFileInput" accept="video/*" style="display:none;">
+                <video id="referenceVideoPreview" width="300" height="300" hidden></video>
+                <button id="playPauseReferenceBtn" style="display:none;">Play/Pause</button>
+                <input type="range" id="frameScrubberReference" style="display:none;" value="0" min="0" max="100" step="1">
+                <button id="captureFrameReference" style="display:none;">Capture Frame</button>
+            </section>
+            <canvas id="referenceCanvas" width="300" height="300" hidden></canvas>
+            <div class="controls">
+                <button id="editReferenceBtn" hidden>Edit Image</button>
+                <button id="keypointsReferenceBtn" hidden>Place Keypoints</button>
+                <select id="keypointReferenceType"  hidden>
+                    <option value="nose">Nose</option>
+                    <option value="leftEye">Left Eye</option>
+                    <option value="rightEye">Right Eye</option>
+                    <option value="leftEar">Left Ear</option>
+                    <option value="rightEar">Right Ear</option>
+                    <option value="leftShoulder">Left Shoulder</option>
+                    <option value="rightShoulder">Right Shoulder</option>
+                    <option value="leftElbow">Left Elbow</option>
+                    <option value="rightElbow">Right Elbow</option>
+                    <option value="leftWrist">Left Wrist</option>
+                    <option value="rightWrist">Right Wrist</option>
+                    <option value="leftHip">Left Hip</option>
+                    <option value="rightHip">Right Hip</option>
+                    <option value="leftKnee">Left Knee</option>
+                    <option value="rightKnee">Right Knee</option>
+                    <option value="leftAnkle">Left Ankle</option>
+                    <option value="rightAnkle">Right Ankle</option>
+                </select>
+                <button id="saveKeypointsReferenceBtn" hidden onclick="saveKeypointsReference()">Save Keypoints</button>
             </div>
-
-            <div class="upload-section">
-                <button type="button" class="upload-button" id="uploadReferenceVideoButton">Upload Reference Video</button>
-                <video id="referenceVideoPreview" width="300" height="300" style="display: none;"></video>
-                <button id="playPauseReferenceBtn">Play/Pause Reference Video</button>
-                <input type="range" id="frameScrubberReference" value="0" min="0" max="100" step="0.04">
-                <button type="button" id="captureFrameReference">Capture Reference Frame</button>
-            </div>
         </div>
-
-        <div class="output-section">
-            <h2>Coordinates:</h2>
-            <pre id="coordsDisplay"></pre>
-        </div>
-
-        <div class="output-section">
-            <button id="showSuggestions">Show Suggestions</button>
-            <h2>Suggestions:</h2>
-            <pre id="suggestionsDisplay"></pre>
-        </div>
-
-        <!-- Hidden File Inputs -->
-        <input type="file" id="userFileInput" accept="image/*" style="display: none;">
-        <input type="file" id="referenceFileInput" accept="image/*" style="display: none;">
-        <input type="file" id="userVideoFileInput" accept="video/*" style="display: none;">
-        <input type="file" id="referenceVideoFileInput" accept="video/*" style="display: none;">
-
-        <script src="{{url_for('static', filename='dashboard.js')}}"></script>
-    </div>
+    </main>
+    <script src="{{url_for('static', filename='dashboard.js')}}"></script>
 </body>
 </html>
+
+                   
+                
