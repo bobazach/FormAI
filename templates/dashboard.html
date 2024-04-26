@@ -26,12 +26,17 @@
                         <video class="userVideoPreview" width="300" height="300" hidden></video>
                     </div>
                     <button class="playPauseUserBtn" style="display:none;">Play/Pause</button>
+                    <label for="frameScrubberUser" id="frameScrub" style="display:none;">Frame Scrubber:</label>
                     <input type="range" class="frameScrubberUser" style="display:none;" value="0" min="0" max="100" step="1">
+                    <label for="zoom-slider" id="zoomScrub" style="display:none;">Zoom:</label>
                     <input type="range" class="zoom-slider" style="display:none;" min="0.5" max="8" step="0.05" value="1" title="Zoom">
                     <button class="captureFrameUser" style="display:none;">Capture Frame</button>
+                    <select id="userKeypointSelector" class="keypoint-selector">
+                        <!-- Dynamically filled with options -->
+                    </select>
                 </section>
                 <canvas class="userCanvas" width="300" height="300" hidden></canvas>
-                    <button class="saveKeypointsBtn" style="display:none;">Save Keypoints</button>
+                <button class="saveKeypointsBtn" style="display:none;">Save Keypoints</button>
             </div>
             <div class="side reference-side">
                 <section class="video-controls">
@@ -41,9 +46,14 @@
                         <video class="referenceVideoPreview" width="300" height="300" hidden></video>
                     </div>
                     <button class="playPauseReferenceBtn" style="display:none;">Play/Pause</button>
+                    <label for="frameScrubberReference" id="frameScrub" style="display:none;">Frame Scrubber:</label>
                     <input type="range" class="frameScrubberReference" style="display:none;" value="0" min="0" max="100" step="1">
+                    <label for="zoom-slider" id="zoomScrub" style="display:none;">Zoom:</label>
                     <input type="range" class="zoom-slider" style="display:none;" min="0.5" max="8" step="0.05" value="1" title="Zoom">
                     <button class="captureFrameReference" style="display:none;">Capture Frame</button>
+                    <select id="referenceKeypointSelector" class="keypoint-selector">
+                        <!-- Dynamically filled with options -->
+                    </select>
                 </section>
                 <canvas class="referenceCanvas" width="300" height="300" hidden></canvas>
                 <button class="saveKeypointsBtn" style="display:none;">Save Keypoints</button>
