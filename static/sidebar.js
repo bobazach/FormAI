@@ -35,7 +35,9 @@ function createNewSession() {
         keypointsDataUser: [],
         keypointsIndexUser: 0,
         keypointsDataReference: [],
-        keypointsIndexReference: 0
+        keypointsIndexReference: 0,
+        allKeypointsUser: [],
+        allKeypointsReference: []
     };
 
     initSessionControls(sessionTemplate, sessionId);
@@ -244,15 +246,21 @@ function switchToKeypointsMode(container, sessionId, isUserSide) {
     }
     canvas.addEventListener('click', sessions[sessionId].clickHandler);
 
-    // Hide video controls
-    const videoControls = container.querySelectorAll('.playPauseUserBtn, .playPauseReferenceBtn, .frameScrubberUser, .frameScrubberReference, .zoom-slider, .captureFrameUser, .captureFrameReference');
-    videoControls.forEach(control => control.style.display = 'none');
-    const controls = container.querySelectorAll('.controls, .video-wrapper, .upload-button');
-    controls.forEach(control => control.style.display = 'none');
-    const keypointsButton = container.querySelector('.keypointsBtn');
-    if (keypointsButton) {
-        keypointsButton.style.display = 'none';  // Optionally hide keypoints mode button if it should not be used again
+    hideControls(container);
+
+    // Prepare for new set of keypoints
+    if (!sessions[sessionId].keypointsData) {
+        sessions[sessionId].keypointsData = [];
     }
+    sessions[sessionId].currentKeypoints = [];
+}
+
+function hideControls(container) {
+    const selectors = ['.playPauseUserBtn', '.playPauseReferenceBtn', '.frameScrubberUser', '.frameScrubberReference', '.zoom-slider', '.captureFrameUser', '.captureFrameReference', '.controls', '.video-wrapper', '.upload-button'];
+    selectors.forEach(selector => {
+        const controls = container.querySelectorAll(selector);
+        controls.forEach(control => control.style.display = 'none');
+    });
 }
 
 
@@ -305,6 +313,10 @@ function showSaveButton(button, keypointData, sessionId, isUserSide) {
 function saveKeypoints(container, keypointData, sessionId, isUserSide) {
     // Assuming a more complex structure might be used or sending this data to a server.
     console.log("Keypoints saved:", keypointData);
+    const session = sessions[sessionId];
+    const keypointsArray = isUserSide ? session.allKeypointsUser : session.allKeypointsReference;
+    keypointsArray.push(keypointData.slice());
+    console.log("All keypoints:", keypointsArray);
     const canvas = isUserSide ? container.querySelector('.userCanvas') : container.querySelector('.referenceCanvas');
     if (sessions[sessionId].clickHandler) {
         canvas.removeEventListener('click', sessions[sessionId].clickHandler);
