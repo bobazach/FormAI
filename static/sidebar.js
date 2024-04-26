@@ -42,10 +42,20 @@ function createNewSession() {
 
     initSessionControls(sessionTemplate, sessionId);
     setupVideoControls(sessionTemplate);  // Setup drag and zoom for this specific session
-
+    populateKeypointSelectors(sessionTemplate);  // Populate the keypoint selectors for this session
     if (currentSessionId === 1) {
         switchSession(sessionId);  // Automatically switch to the first session created
     }
+}
+
+function populateKeypointSelectors(sessionTemplate) {
+    const userSelector = sessionTemplate.querySelector('.user-side .keypoint-selector');
+    const referenceSelector = sessionTemplate.querySelector('.reference-side .keypoint-selector');
+    keypoints.forEach(kp => {
+        let option = new Option(kp, kp);
+        userSelector.add(option.cloneNode(true));
+        referenceSelector.add(option.cloneNode(true));
+    });
 }
 
 function setupVideoControls(sessionTemplate) {
@@ -248,11 +258,6 @@ function switchToKeypointsMode(container, sessionId, isUserSide) {
 
     hideControls(container);
 
-    // Prepare for new set of keypoints
-    if (!sessions[sessionId].keypointsData) {
-        sessions[sessionId].keypointsData = [];
-    }
-    sessions[sessionId].currentKeypoints = [];
 }
 
 function hideControls(container) {
@@ -267,29 +272,48 @@ function hideControls(container) {
 
 function handleCanvasClick(event, sessionId, isUserSide) {
     const session = sessions[sessionId];
+    const selector = isUserSide ? document.getElementById('userKeypointSelector') : document.getElementById('referenceKeypointSelector');
+    const keypointName = selector.value;
     const keypointData = isUserSide ? session.keypointsDataUser : session.keypointsDataReference;
-    const keypointsIndex = isUserSide ? session.keypointsIndexUser : session.keypointsIndexReference;
     const canvas = isUserSide ? session.content.querySelector('.userCanvas') : session.content.querySelector('.referenceCanvas');
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
+    if (!session.placedKeypoints) {
+        session.placedKeypoints = new Set();
+    }
 
-    if (keypointsIndex < (keypoints.length)) {
-        console.log("Keypoint:", keypointsIndex, x, y);
-        console.log("Keypoints:", keypoints.length);
-        const keypointName = keypoints[keypointsIndex];
+    if (!session.placedKeypoints.has(keypointName)) {
         drawKeypoint(ctx, x, y, keypointName);
-        keypointData.push({ x: x, y: y });
+        keypointData.push({ keypoint: keypointName, x, y });
+        session.placedKeypoints.add(keypointName);
+        const saveButton = isUserSide ? session.content.querySelector('.user-side .saveKeypointsBtn') : session.content.querySelector('.reference-side .saveKeypointsBtn');
+        advanceDropdown(saveButton, keypointData, sessionId, isUserSide, selector, session.placedKeypoints);
 
-        isUserSide ? session.keypointsIndexUser++ : session.keypointsIndexReference++;
+    } else {
+        alert(`${keypointName} has already been placed. Please select another keypoint.`);
+    }
+}
 
-        if ((isUserSide ? session.keypointsIndexUser : session.keypointsIndexReference) === keypoints.length) {
-            console.log("All keypoints placed");
-            const saveButton = isUserSide ? session.content.querySelector('.user-side .saveKeypointsBtn') : session.content.querySelector('.reference-side .saveKeypointsBtn');
-            showSaveButton(saveButton, keypointData, sessionId, isUserSide);
+function advanceDropdown(saveButton, keypointData, sessionId, isUserSide, selector, placedKeypoints) {
+    let nextIndex = -1;
+    for (let i = 0; i < selector.options.length; i++) {
+        if (!placedKeypoints.has(selector.options[i].value)) {
+            nextIndex = i;
+            break;
         }
+    }
+
+    if (nextIndex !== -1) {
+        selector.selectedIndex = nextIndex;
+    } else {
+        // If no unplaced keypoints are left, handle completion
+        alert('All keypoints for this frame have been placed.');
+        selector.disabled = true;  
+        showSaveButton(saveButton, keypointData, sessionId, isUserSide);// Disable the selector if needed
+        // You can call showSaveButton here if that's part of your workflow
     }
 }
 
@@ -322,6 +346,10 @@ function saveKeypoints(container, keypointData, sessionId, isUserSide) {
         canvas.removeEventListener('click', sessions[sessionId].clickHandler);
         delete sessions[sessionId].clickHandler;  // Optional: Remove the handler reference if no longer needed
     }
+    const selector = isUserSide ? container.querySelector('.user-side .keypoint-selector') : container.querySelector('.reference-side .keypoint-selector');
+    session.placedKeypoints.clear();
+    selector.selectedIndex = 0;
+    selector.disabled = false;
 
     alert('Keypoints saved!');
     exitKeypointsMode(container, sessionId, isUserSide);  // Switch back to video controls
@@ -355,6 +383,8 @@ function exitKeypointsMode(container, sessionId, isUserSide) {
         sessions[sessionId].keypointsDataReference = [];
     }
 }
+
+
 
 
 
