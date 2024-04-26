@@ -3,91 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload and Analyze</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='styles/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css') }}">
 </head>
 <body>
     <div id="sessionSidebar">
-        <button id="newSessionBtn">New Analysis</button>
-        <ul id="sessionList"></ul>
+        <button id="newSessionBtn">New Analysis Session</button>
+        <ul id="sessionList">
+            <!-- Sessions will be dynamically added here -->
+        </ul>
     </div>
-    <div id="currentSession" class="session-container">
-        <!-- Existing content for side by side analysis goes here -->
-        <div id="container">
+    <div id="currentSession" style="margin-left: 220px;">
+        <!-- Session content will be loaded here -->
+    </div>
+
+    <div class="session-template" hidden>
+        <div class="container">
             <div class="side user-side">
-                <!-- User Video Controls and Canvas -->
                 <section class="video-controls">
-                    <button class="upload-button" id="uploadUserVideoButton">Upload User Video</button>
-                    <input type="file" id="userVideoFileInput" accept="video/*" style="display:none;">
-                    <video id="userVideoPreview" width="300" height="300" hidden></video>
-                    <button id="playPauseUserBtn" style="display:none;">Play/Pause</button>
-                    <input type="range" id="frameScrubberUser" style="display:none;" value="0" min="0" max="100" step="1">
-                    <button id="captureFrameUser" style="display:none;">Capture Frame</button>
+                    <button class="upload-button user" id="uploadUserVideoButton">Upload User Video</button>
+                    <input type="file" class="userVideoFileInput" accept="video/*" style="display:none;">
+                    <div class="video-wrapper">
+                        <video class="userVideoPreview" width="300" height="300" hidden></video>
+                    </div>
+                    <button class="playPauseUserBtn" style="display:none;">Play/Pause</button>
+                    <input type="range" class="frameScrubberUser" style="display:none;" value="0" min="0" max="100" step="1">
+                    <input type="range" class="zoom-slider" style="display:none;" min="0.5" max="8" step="0.05" value="1" title="Zoom">
+                    <button class="captureFrameUser" style="display:none;">Capture Frame</button>
                 </section>
-                <canvas id="userCanvas" width="300" height="300" hidden></canvas>
-                <div class="controls">
-                    <button id="editImageBtn" hidden>Edit Image</button>
-                    <button id="keypointsBtn" hidden>Place Keypoints</button>
-                    <select id="keypointType" hidden>
-                        <option value="nose">Nose</option>
-                        <option value="leftEye">Left Eye</option>
-                        <option value="rightEye">Right Eye</option>
-                        <option value="leftEar">Left Ear</option>
-                        <option value="rightEar">Right Ear</option>
-                        <option value="leftShoulder">Left Shoulder</option>
-                        <option value="rightShoulder">Right Shoulder</option>
-                        <option value="leftElbow">Left Elbow</option>
-                        <option value="rightElbow">Right Elbow</option>
-                        <option value="leftWrist">Left Wrist</option>
-                        <option value="rightWrist">Right Wrist</option>
-                        <option value="leftHip">Left Hip</option>
-                        <option value="rightHip">Right Hip</option>
-                        <option value="leftKnee">Left Knee</option>
-                        <option value="rightKnee">Right Knee</option>
-                        <option value="leftAnkle">Left Ankle</option>
-                        <option value="rightAnkle">Right Ankle</option>
-                    </select>
-                    <button id="saveKeypointsBtn" hidden onclick="saveKeypoints()">Save Keypoints</button>
-                </div>
+                <canvas class="userCanvas" width="300" height="300" hidden></canvas>
+                    <button class="saveKeypointsBtn" style="display:none;">Save Keypoints</button>
             </div>
             <div class="side reference-side">
-                <!-- Reference Video Controls and Canvas -->
                 <section class="video-controls">
-                    <button class="upload-button" id="uploadReferenceVideoButton">Upload Reference Video</button>
-                    <input type="file" id="referenceVideoFileInput" accept="video/*" style="display:none;">
-                    <video id="referenceVideoPreview" width="300" height="300" hidden></video>
-                    <button id="playPauseReferenceBtn" style="display:none;">Play/Pause</button>
-                    <input type="range" id="frameScrubberReference" style="display:none;" value="0" min="0" max="100" step="1">
-                    <button id="captureFrameReference" style="display:none;">Capture Frame</button>
+                    <button class="upload-button reference" id="uploadReferenceVideoButton">Upload Reference Video</button>
+                    <input type="file" class="referenceVideoFileInput" accept="video/*" style="display:none;">
+                    <div class="video-wrapper">
+                        <video class="referenceVideoPreview" width="300" height="300" hidden></video>
+                    </div>
+                    <button class="playPauseReferenceBtn" style="display:none;">Play/Pause</button>
+                    <input type="range" class="frameScrubberReference" style="display:none;" value="0" min="0" max="100" step="1">
+                    <input type="range" class="zoom-slider" style="display:none;" min="0.5" max="8" step="0.05" value="1" title="Zoom">
+                    <button class="captureFrameReference" style="display:none;">Capture Frame</button>
                 </section>
-                <canvas id="referenceCanvas" width="300" height="300" hidden></canvas>
-                <div class="controls">
-                    <button id="editReferenceBtn" hidden>Edit Image</button>
-                    <button id="keypointsReferenceBtn" hidden>Place Keypoints</button>
-                    <select id="keypointReferenceType"  hidden>
-                        <option value="nose">Nose</option>
-                        <option value="leftEye">Left Eye</option>
-                        <option value="rightEye">Right Eye</option>
-                        <option value="leftEar">Left Ear</option>
-                        <option value="rightEar">Right Ear</option>
-                        <option value="leftShoulder">Left Shoulder</option>
-                        <option value="rightShoulder">Right Shoulder</option>
-                        <option value="leftElbow">Left Elbow</option>
-                        <option value="rightElbow">Right Elbow</option>
-                        <option value="leftWrist">Left Wrist</option>
-                        <option value="rightWrist">Right Wrist</option>
-                        <option value="leftHip">Left Hip</option>
-                        <option value="rightHip">Right Hip</option>
-                        <option value="leftKnee">Left Knee</option>
-                        <option value="rightKnee">Right Knee</option>
-                        <option value="leftAnkle">Left Ankle</option>
-                        <option value="rightAnkle">Right Ankle</option>
-                    </select>
-                    <button id="saveKeypointsReferenceBtn" hidden onclick="saveKeypointsReference()">Save Keypoints</button>
-                </div>
-            </div> 
+                <canvas class="referenceCanvas" width="300" height="300" hidden></canvas>
+                <button class="saveKeypointsBtn" style="display:none;">Save Keypoints</button>
+            </div>
         </div>
     </div>
-    <script src="{{url_for('static', filename='sidebyside.js')}}"></script>
-    <script src="{{url_for('static', filename='sidebar.js')}}"></script>
+
+    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
 </body>
 </html>

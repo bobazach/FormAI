@@ -91,26 +91,92 @@ body, html {
     width: 100%;
     padding: 10px 0;
     margin-bottom: 20px;
+    background-color: #5cb85c; /* Regular green */
+    color: white; /* White text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    border: none; /* No border for a clean look */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effects */
+}
+
+#newSessionBtn:hover {
+    background-color: #4cae4c; /* Darker green on hover for better interaction feedback */
 }
 
 #sessionList li {
     padding: 10px;
-    background-color: #f0f0f0;
+    background-color: #4cae4c; /* Darker green for session buttons */
     margin-top: 5px;
     cursor: pointer;
+    color: white; /* White text to contrast the dark green background */
+    border-radius: 4px; /* Rounded corners for a softer look */
+    transition: background-color 0.3s ease; /* Transition for hover effect */
+}
+
+#sessionList li:hover {
+    background-color: #398439; /* Even darker green for hover state */
 }
 
 #sessionList li.active {
-    background-color: #ccc;
+    background-color: #307d30; /* A distinct green shade for active session */
 }
 
 #currentSession {
-    margin-left: 220px; /* Account for sidebar width */
+    margin-left: 220px;
     padding: 20px;
 }
 
-.session-container {
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    gap: 20px; /* space between user and reference sides */
+}
+
+.side {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
+
+.video-controls, .controls {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.upload-button, button {
+    width: 90%;
+    padding: 8px 12px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: #5cb85c;
+    color: white;
+    cursor: pointer;
+}
+
+.upload-button:hover, button:hover {
+    background-color: #4cae4c;
+}
+
+canvas, .video-wrapper {
+    width: 300px;
+    height: 300px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    background-color: #ddd;
+    overflow : hidden;
+    position: relative;
+    cursor: grab;
+}
+
+input[type="range"] {
+    width: 90%;
+    margin: 10px 0;
+}
+
+
