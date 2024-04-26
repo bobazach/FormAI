@@ -245,7 +245,7 @@ function captureFrameToCanvas(videoElement, canvas, sessionId, isUserSide) {
     canvas.hidden = false;
 
     switchToKeypointsMode(canvas.parentNode, sessionId, isUserSide);
-    selector.style.display = 'block';
+    //selector.style.display = 'block';
 }
 
 
@@ -358,7 +358,6 @@ function saveKeypoints(container, keypointData, sessionId, isUserSide) {
     session.placedKeypoints.clear();
     selector.selectedIndex = 0;
     selector.disabled = false;
-    selector.style.display = 'none';
 
     alert('Keypoints saved!');
     exitKeypointsMode(container, sessionId, isUserSide);  // Switch back to video controls
@@ -392,6 +391,25 @@ function exitKeypointsMode(container, sessionId, isUserSide) {
         sessions[sessionId].keypointsDataReference = [];
     }
 }
+
+function getCurrentSessionKeypoints(sessionId) {
+    const session = sessions[sessionId];
+    const keypointsData = {
+        userKeypoints: session.allKeypointsUser,
+        referenceKeypoints: session.allKeypointsReference
+    };
+    if (!session) {
+        console.error('Session not found:', sessionId);
+        return null;  // Ensure to handle this case in your calling function
+    }
+    console.log('Keypoints data retrieved:', keypointsData);
+    return {
+        userKeypoints: session.allKeypointsUser,
+        referenceKeypoints: session.allKeypointsReference
+    };
+
+}
+
 
 
 
