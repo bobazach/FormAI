@@ -188,10 +188,13 @@ function loadVideo(file, videoElement, container) {
             enableVideoControls(videoElement);
             const userZoomSlider = container.querySelector('.user-side .zoom-slider');
             const referenceZoomSlider = container.querySelector('.reference-side .zoom-slider');
-
+            const zoomScrub = container.querySelector('#zoomScrub');
+            const frameScrub = container.querySelector('#frameScrub');
+            // Display the zoom slider label
+            zoomScrub.style.display = 'block';
+            frameScrub.style.display = 'block';
             userZoomSlider.style.display = 'block';
             referenceZoomSlider.style.display = 'block';
-
         };
     }
 }
@@ -242,6 +245,7 @@ function captureFrameToCanvas(videoElement, canvas, sessionId, isUserSide) {
     canvas.hidden = false;
 
     switchToKeypointsMode(canvas.parentNode, sessionId, isUserSide);
+    selector.style.display = 'block';
 }
 
 
@@ -266,6 +270,10 @@ function hideControls(container) {
         const controls = container.querySelectorAll(selector);
         controls.forEach(control => control.style.display = 'none');
     });
+    const zoomScrub = container.querySelector('#zoomScrub');
+    const frameScrub = container.querySelector('#frameScrub');
+    zoomScrub.style.display = 'none';
+    frameScrub.style.display = 'none';
 }
 
 
@@ -350,6 +358,7 @@ function saveKeypoints(container, keypointData, sessionId, isUserSide) {
     session.placedKeypoints.clear();
     selector.selectedIndex = 0;
     selector.disabled = false;
+    selector.style.display = 'none';
 
     alert('Keypoints saved!');
     exitKeypointsMode(container, sessionId, isUserSide);  // Switch back to video controls
