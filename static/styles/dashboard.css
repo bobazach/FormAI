@@ -179,4 +179,17 @@ input[type="range"] {
     margin: 10px 0;
 }
 
+#suggestionsBox {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    width: 95%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#suggestionsContent {
+    min-height: 100px;
+}
+
 
