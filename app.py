@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
-from gpt import generate_golf_swing_feedback
+from gpt import generate_golf_swing_feedback, process_keypoints_data
 from models import db, User
 # from dotenv import load_dotenv
 import os
@@ -79,20 +79,35 @@ def analyze():
     return render_template('analyze.html')
 
 
+# @app.route('/get-suggestions', methods=['POST'])
+# def get_suggestions():
+#     data = request.get_json()
+#     if not data or 'keypoints' not in data:
+#         print("Error: No keypoints data received")
+#         return jsonify({'error': 'No keypoints data provided'}), 400
+
+#     # Assuming the data structure is { 'user': [list of dicts], 'reference': [list of dicts] }
+#     user_data = data['keypoints']['user']
+#     reference_data = data['keypoints']['reference']
+    
+#     # Simulate processing this data to calculate necessary metrics
+#     # This is where you would calculate angles, etc., using these data structures
+#     user_angles = user_data
+#     reference_angles = reference_data
+    
+#     # Call the feedback generator function with computed angles
+#     suggestions = generate_golf_swing_feedback(user_angles, reference_angles)
+#     return jsonify({'suggestions': suggestions})
+
 @app.route('/get-suggestions', methods=['POST'])
 def get_suggestions():
-    data = request.json
-    formatted_data = data.get('formattedData', "")
-    if not formatted_data:
-        print("Error: No data received")
-        return jsonify({'error': 'No data provided'}), 400
-
-    print("Formatted Data Received:", formatted_data)
-    # Simulated processing of formatted data
-    # Here you would parse the formatted data string if necessary and call the appropriate function in gpt.py
-    suggestions = generate_golf_swing_feedback(formatted_data, formatted_data)  # Adjust as needed
+    data = request.get_json()
+    if not data or 'keypoints' not in data:
+        return jsonify({'error': 'No keypoints data provided'}), 400
+    
+    # Call the processing function directly with the keypoints data
+    suggestions = process_keypoints_data(data['keypoints'])
     return jsonify({'suggestions': suggestions})
-
 
 if __name__ == '__main__':
     app.run(debug=True)

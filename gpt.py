@@ -2,9 +2,107 @@ import openai
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+import json
+import math
 
 # load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+
+def process_keypoints_data(keypoints_data):
+    """
+    Process keypoints data to calculate angles for limbs for all frames provided.
+    Args:
+    keypoints_data (dict): Contains user and reference data with keypoints for multiple frames.
+    Returns:
+    dict: Angles for user's and reference's limbs for each frame.
+    """
+    results = {
+        'user_angles': [],
+        'reference_angles': []
+    }
+
+    print(keypoints_data)
+
+    # Process all user frames
+    for frame in keypoints_data['user']:
+        user_angles = {
+            'right_arm': calculate_angle(frame['Right Shoulder'], frame['Right Elbow'], frame['Right Wrist']),
+            'left_arm': calculate_angle(frame['Left Shoulder'], frame['Left Elbow'], frame['Left Wrist']),
+            'right_leg': calculate_angle(frame['Right Hip'], frame['Right Knee'], frame['Right Ankle']),
+            'left_leg': calculate_angle(frame['Left Hip'], frame['Left Knee'], frame['Left Ankle'])
+        }
+        results['user_angles'].append(user_angles)
+
+    # Process all reference frames, if any
+    for frame in keypoints_data.get('reference', []):  # Use get to handle the case where 'reference' may be empty
+        reference_angles = {
+            'right_arm': calculate_angle(frame['Right Shoulder'], frame['Right Elbow'], frame['Right Wrist']),
+            'left_arm': calculate_angle(frame['Left Shoulder'], frame['Left Elbow'], frame['Left Wrist']),
+            'right_leg': calculate_angle(frame['Right Hip'], frame['Right Knee'], frame['Right Ankle']),
+            'left_leg': calculate_angle(frame['Left Hip'], frame['Left Knee'], frame['Left Ankle'])
+        }
+        results['reference_angles'].append(reference_angles)
+
+    return results
+
+# Example keypoints data structure expected
+# keypoints_data = {
+#     'user': {
+#         'Right Shoulder': {'x': 0, 'y': 0},
+#         'Right Elbow': {'x': 1, 'y': 0},
+#         'Right Wrist': {'x': 2, 'y': 0},
+#         ...
+#     },
+#     'reference': {
+#         'Right Shoulder': {'x': 0, 'y': 0},
+#         'Right Elbow': {'x': 0.5, 'y': 0},
+#         'Right Wrist': {'x': 1, 'y': 0},
+#         ...
+#     }
+# }
+
+
+def calculate_angles(frames):
+    # Example logic to calculate angles
+    # This is a placeholder function
+    return {
+        'right_arm': 90,  # Example angle
+    } 
+
+import math
+
+def calculate_angle(p1, p2, p3):
+    """
+    Calculate the angle at p2 given three points p1, p2, and p3.
+    Each point p is a dictionary with 'x' and 'y' as keys.
+
+    Args:
+    p1, p2, p3 (dict): Points in the format {'x': float, 'y': float}
+
+    Returns:
+    float: Angle in degrees at p2.
+    """
+    # Vector from p1 to p2
+    v1 = (p1['x'] - p2['x'], p1['y'] - p2['y'])
+    # Vector from p3 to p2
+    v2 = (p3['x'] - p2['x'], p3['y'] - p2['y'])
+
+    # Calculate the dot product of vectors v1 and v2
+    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
+
+    # Calculate the magnitudes of vectors v1 and v2
+    magnitude_v1 = math.sqrt(v1[0]**2 + v1[1]**2)
+    magnitude_v2 = math.sqrt(v2[0]**2 + v2[1]**2)
+
+    # Calculate the angle in radians
+    angle_radians = math.acos(dot_product / (magnitude_v1 * magnitude_v2))
+
+    # Convert angle from radians to degrees
+    angle_degrees = math.degrees(angle_radians)
+
+    return angle_degrees
+
 
 
 def generate_golf_swing_feedback(user_angles, pro_angles):
@@ -58,7 +156,7 @@ def generate_golf_swing_feedback(user_angles, pro_angles):
     
 
     # Extract and return the suggestions from the response
-    return pro_angles
+    return user_angles, pro_angles
 
 # Example joint angles from user and pro
 
