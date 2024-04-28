@@ -1,0 +1,96 @@
+{
+    "user_results": {
+        "body_rotations": [
+            {
+                "shoulder_rotation": 1.005086005254142,
+                "hip_rotation": 71.16735432823705
+            },
+            {
+                "shoulder_rotation": 11.907943981224651,
+                "hip_rotation": 63.82471001824007
+            }
+        ],
+        "elbow_bend": [
+            {
+                "right_elbow": 165.25797998549925,
+                "left_elbow": 138.31923563434404
+            },
+            {
+                "right_elbow": 169.19264919270083,
+                "left_elbow": 177.73670909844697
+            }
+        ],
+        "knee_flexion": [
+            {
+                "right_knee": 166.04752223191508,
+                "left_knee": 179.58482045885447
+            },
+            {
+                "right_knee": 171.87371558276868,
+                "left_knee": 121.07575595842103
+            }
+        ],
+        "weight_shift": 16.278820596099706,
+        "wrist_hinge": [
+            {
+                "right_wrist_hinge": 29.538782259558097,
+                "left_wrist_hinge": 140.4403320310055
+            },
+            {
+                "right_wrist_hinge": 72.34987578006988,
+                "left_wrist_hinge": 79.46081627137177
+            }
+        ],
+        "balance": {
+            "hip_stability": 16.278820596099706,
+            "ankle_stability": 19.79898987322333
+        }
+    },
+    "reference_results": {
+        "body_rotations": [
+            {
+                "shoulder_rotation": 0.7408524093890049,
+                "hip_rotation": 72.3314349118579
+            },
+            {
+                "shoulder_rotation": 10.40771131249005,
+                "hip_rotation": 73.64216250384867
+            }
+        ],
+        "elbow_bend": [
+            {
+                "right_elbow": 138.66454081070174,
+                "left_elbow": 149.03624346792648
+            },
+            {
+                "right_elbow": 158.4985656759521,
+                "left_elbow": 161.88564771652406
+            }
+        ],
+        "knee_flexion": [
+            {
+                "right_knee": 156.68229161324493,
+                "left_knee": 171.16502550179612
+            },
+            {
+                "right_knee": 174.32200315186975,
+                "left_knee": 143.1074176955321
+            }
+        ],
+        "weight_shift": 13.0,
+        "wrist_hinge": [
+            {
+                "right_wrist_hinge": 85.42607874009914,
+                "left_wrist_hinge": 108.43494882292201
+            },
+            {
+                "right_wrist_hinge": 74.98163936884934,
+                "left_wrist_hinge": 57.2647737278924
+            }
+        ],
+        "balance": {
+            "hip_stability": 13.0,
+            "ankle_stability": 3.1622776601683795
+        }
+    }
+}
