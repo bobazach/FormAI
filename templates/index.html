@@ -7,53 +7,94 @@
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
 </head>
 <body>
-    <img id="background-image" src="{{url_for('static', filename='images/background.png')}}" alt="">
-    <div class="header">
-        <div class="logo">
-            <img src="{{url_for('static', filename='images/FormAI_Logo.png')}}" alt="FormAI Logo" width="30px" height="30px">
-            <p>ORM AI</p>
+    <div id="first-viewport-container">
+        <img id="background-image" src="{{url_for('static', filename='images/pebble_beanch.jpeg')}}" alt="">
+        <div class="header">
+            <img src="{{url_for('static', filename='images/FormAILogo.png')}}" class="logo" alt="FormAI Logo">
+            <nav id="nav-buttons">
+                <form action="/login" method="get">
+                    <button class="login-button">LOGIN</button>
+                </form>
+                <form action="/dashboard" method="get">
+                    <button class="get-started-button">GET STARTED</button>
+                </form>
+            </nav>
         </div>
-        <nav id="nav-buttons">
-            <form action="/login" method="get">
-                <button class="login-button">LOGIN</button>
-            </form>
-            <form action="/dashboard" method="get">
-                <button class="get-started-button">GET STARTED</button>
-            </form>
-        </nav>
+        <div id="main-content">
+            <div id="main-content-left">
+                <div id="intro">
+                    <h1>Your <span class="highlight">personal, on-demand</span><br>personal coach and trainer</h1>
+                    <p>FormAI benchmarks your form with those of professionals or a custom input, proving AI-enhanced recommendations to simulate real-time coaching</p>
+                    <button onclick="location.href='#pricing-container'" class="features-button">FEATURES</button>
+                </div>
+            </div>
+            <div id="main-content-right">
+                <div id="featured_coach_container">
+                    <img src="{{url_for('static', filename='images/Tiger_Woods.png')}}" alt="">
+                </div>
+                <p>Compare your swing with that of Tiger Woods, 5 time Masters Tournament Winner, in this week's featured coach</p>
+
+            </div>
+        </div>
+        <br>
+        <div id="how-it-works">
+            <h1>How it works</h1>
+            <div id="step-list">
+                <div class="step">
+                    <img src="{{url_for('static', filename='images/upload.png')}}" alt="">
+                    <p>Upload your image/video along with a comparison image/video to improve your form</p>
+                </div>
+                <div class="step">
+                    <img src="{{url_for('static', filename='images/graph.png')}}" alt="">
+                    <p>Let our <span class="highlight">AI/ML models </span>generate similarity scores and recommendations on how to improve your form</p>
+                </div>
+                <div class="step">
+                    <img src="{{url_for('static', filename='images/interactive.png')}}" alt="">
+                    <p>Interact with a <span class="highlight">fitness chatbot</span> to improve recommendations</p>
+                </div>
+                <div class="step">
+                    <img src="{{url_for('static', filename='images/dashboard.png')}}" alt="">
+                    <p>View your current and previous uploads in a simple <span class="highlight">dashboard</span></p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="main-content">
-        <div id="main-content-left">
-            <div id="intro">
-                <h1>Your <span class="highlight">personal, on-demand</span> form coach and trainer</h1>
-                <p>FormAI benchmarks your form with those of professionals or a custom input, proving AI-enhanced recommendations to simulate real-time coaching</p>
-                <button class="features-button">FEATURES</button>
-            </div>
+    
+    <div id="pricing-container">
+        <h1>Features and Pricing</h1>
+        <div class="pricing-tiers">
+            <div class="pricing-plan">
+                <h2>Basic</h2>
+                <p class="price">Free</p>
+                <ul class="features">
+                    <li>Upload and compare images/videos</li>
+                    <li>Fixed library of comparison media</li>
+                    <li>Keypoint detection and pose outlines</li>
+                    <li>Basic accuracy scores</li>
+                </ul>
+              </div>
+              <div class="pricing-plan">
+                <h2>Premium</h2>
+                <p class="price">$10 / month</p>
+                <ul class="features">
+                    <li>Basic features</li>
+                    <li>Frame scrubbing and video editing</li>
+                    <li>Comprehensive accuracy scores for up to 17 keypoints</li>
+                    <li>Generate suggestions and recommendations</li>
+                    <li>Multiple sessions</li>
+                </ul>
+              </div>
+              <div class="pricing-plan">
+                <h2>Team</h2>
+                <p class="price">$50 / month</p>
+                <ul class="features">
+                    <li>Premium features</li>
+                    <li>Support up to 10 users</li>
+                    <li>Individual player profiles</li>
+                </ul>
+              </div>
         </div>
-        <div id="main-content-right">
-            <img src="{{url_for('static', filename='images/dashboard-preview.png')}}" alt="Dashboard Preview">
-        </div>
-    </div>
-    <br>
-    <div id="how-it-works">
-        <h1>How it works</h1>
-        <div id="step-list">
-            <div class="step">
-                <img src="{{url_for('static', filename='images/upload.png')}}" alt="">
-                <p>Upload your image/video along with a comparison image/video to improve your form</p>
-            </div>
-            <div class="step">
-                <img src="{{url_for('static', filename='images/graph.png')}}" alt="">
-                <p>Let our <span class="highlight">AI/ML models </span>generate similarity scores and recommendations on how to improve your form</p>
-            </div>
-            <div class="step">
-                <img src="{{url_for('static', filename='images/interactive.png')}}" alt="">
-                <p>Interact with a <span class="highlight">fitness chatbot</span> to improve recommendations</p>
-            </div>
-            <div class="step">
-                <img src="{{url_for('static', filename='images/dashboard.png')}}" alt="">
-                <p>View your current and previous uploads in a simple <span class="highlight">dashboard</span></p>
-            </div>
-        </div>
+      </div>
+      
 </body>
 </html>

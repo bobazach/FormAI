@@ -1,8 +1,24 @@
+
 body {
     font-family: Arial, sans-serif;
     padding: 0;
     margin: 0;
 }
+
+h1 {
+    font-size: 50px;
+}
+
+p {
+    font-size: 20px
+}
+
+#first-viewport-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
 .highlight {
     color: blue;
@@ -10,26 +26,22 @@ body {
 
 #background-image {
     position: fixed;
+    opacity: 0.2;
     z-index: -1;
     width: 100%;
     height: 100vh;
 }
 
 .header {
+    padding: 40px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* This will push the nav to the right */
+    justify-content: space-between;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 30px;
-    padding-left: 30px;
-}
-
-.header nav {
-    padding-right: 30px;
+.logo{
+    height: 50px;
+    width: auto;
 }
 
 #nav-buttons {
@@ -60,11 +72,13 @@ body {
 
 #main-content {
     display: flex;
-    padding: 30px 30px 0px 30px;
+    padding: 50px 50px 0;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
 #main-content-left {
-    width: 60%;
+    width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,15 +89,16 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
+    text-align: center;
 }
 
-#main-content-left p {
-    size: 18px;
+#featured_coach_container {
+    text-align: center;
 }
 
 #main-content-right img {
-    width: 100%;
+    width: 70%;
+    text-align: center;
     height: auto;
     border-radius: 10px;
 }
@@ -91,7 +106,8 @@ body {
 #how-it-works {
     display: flex;
     flex-direction: column;
-    padding-left: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 #step-list {
@@ -101,15 +117,82 @@ body {
 }
 
 .step {
-    padding-right: 10px;
     width: 25%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     justify-content: center;
+    margin: 10px;
 }
 
 .step img {
     width: 50px;
     height: 50px;
 }
+
+#pricing-container {
+    display: flex;
+    flex-direction: column;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.pricing-tiers {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pricing-plan {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+    text-align: center;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pricing-plan h2 {
+    margin-top: 0;
+    color: #333;
+}
+  
+.price {
+    font-size: 36px;
+    color: blue;
+    margin: 20px 0;
+}
+  
+.pricing-plan .features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+  
+.pricing-plan .features li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+  
+.buy-now {
+    background: #1a73e8;
+    color: #fff;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+  
+
+.standout .buy-now {
+    background: #4e8cf7;
+}
+  
