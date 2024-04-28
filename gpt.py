@@ -203,6 +203,20 @@ def generate_golf_swing_feedback(user_results, reference_results):
         'ankle_stability': 'stability index'
     }
 
+    english = {
+        'shoulder_rotation': 'angle',
+        'hip_rotation': 'angle',
+        'right_elbow': 'angle',
+        'left_elbow': 'angle',
+        'right_knee': 'angle',
+        'left_knee': 'angle',
+        'right_wrist_hinge': 'angle',
+        'left_wrist_hinge': 'angle',
+        'weight_shift': '',
+        'hip_stability': 'stability',
+        'ankle_stability': 'stability'
+    }
+
     for category in user_results:
         if isinstance(user_results[category], list):
             for i, frame_metrics in enumerate(user_results[category]):
@@ -233,7 +247,15 @@ def generate_golf_swing_feedback(user_results, reference_results):
     for metric, frame, user_value, ref_value, diff, _ in top_differences:
         unit = units.get(metric, "units")  # Default unit if not specified
         frame_info = f" in frame {frame}" if frame is not None else ""
-        feedback_prompt += f"**{metric.capitalize()}**{frame_info}: User value is {user_value:.2f} {unit}, and the Professional reference value is {ref_value:.2f} {unit}. Discrepancy: {diff:.2f} {unit}. Explain the importance of this metric in golf swing mechanics. Directly quote what the User metric is, the Reference Metric, and the difference between them in your response. Then provide some detailed steps on how to improve this metric.\n"
+        higher_lower = "higher" if user_value > ref_value else "lower"
+        advice_direction = "reduce" if user_value > ref_value else "increase"
+        feedback_prompt += (
+            f"**{metric.capitalize()}**{frame_info}: User current value is {user_value:.2f} {unit}, "
+            f"which is {higher_lower} than the reference standard of {ref_value:.2f} {unit}. "
+            f"Discrepancy: {diff:.2f} {unit}. Then provide some detailed steps on how to improve this metric. Explain to the user how to {advice_direction} the {metric.replace('_', ' ')} {english}. "
+            f"and the steps to {advice_direction} it:\n"
+            "- [Insert specific advice for this metric based on professional guidance]\n"
+        )
 
     print(feedback_prompt)
     # Setup the ChatGPT API call
