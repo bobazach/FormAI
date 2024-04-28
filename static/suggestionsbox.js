@@ -1,3 +1,5 @@
+
+
 function fetchSuggestions(sessionId) {
     console.log('Fetching suggestions for session ID:', sessionId);
 
@@ -18,7 +20,7 @@ function fetchSuggestions(sessionId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({formattedData})
+        body: JSON.stringify({keypoints: formattedData})  // Send structured data
     }).then(response => response.json())
       .then(data => {
           console.log('Suggestions received:', data.suggestions);
@@ -29,6 +31,7 @@ function fetchSuggestions(sessionId) {
           updateSuggestionsBox('Failed to fetch suggestions.', sessionId);
       });
 }
+    
 
 function updateSuggestionsBox(message, sessionId) {
     console.log('Updating suggestions box with message:', message);
@@ -38,23 +41,21 @@ function updateSuggestionsBox(message, sessionId) {
 
 
 function formatDataForDisplay(keypointsData) {
-    // Log the complete keypoints data for inspection
-    console.log("Keypoints Data:", keypointsData);
-
-    // Format user keypoints
-    const userKeypoints = keypointsData.userKeypoints.flatMap(kpArray => 
-        kpArray.map(kp => `User ${kp.keypoint}: X=${kp.x}, Y=${kp.y}`)
+    // Transform user and reference keypoints into structured objects
+    const userKeypointsFormatted = keypointsData.userKeypoints.flatMap(kpArray =>
+        kpArray.reduce((acc, kp) => {
+            acc[kp.keypoint] = {x: kp.x, y: kp.y};
+            return acc;
+        }, {})
     );
 
-    // Format reference keypoints
-    const referenceKeypoints = keypointsData.referenceKeypoints.flatMap(kpArray => 
-        kpArray.map(kp => `Reference ${kp.keypoint}: X=${kp.x}, Y=${kp.y}`)
+    const referenceKeypointsFormatted = keypointsData.referenceKeypoints.flatMap(kpArray =>
+        kpArray.reduce((acc, kp) => {
+            acc[kp.keypoint] = {x: kp.x, y: kp.y};
+            return acc;
+        }, {})
     );
 
-    // Combine all formatted strings, separated by commas for easier reading
-    return [...userKeypoints, ...referenceKeypoints].join(", ");
+    // Return combined data as an object
+    return {user: userKeypointsFormatted, reference: referenceKeypointsFormatted};
 }
-
-
-
-
