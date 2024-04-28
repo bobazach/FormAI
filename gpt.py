@@ -8,101 +8,108 @@ import math
 # load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+# Helper Functions
+def calculate_angle(p1, p2, p3):
+    """Calculate the angle formed at p2 by points p1, p2, and p3, with divide by zero failsafe."""
+    def vector(p1, p2):
+        return (p2['x'] - p1['x'], p2['y'] - p1['y'])
 
-def process_keypoints_data(keypoints_data):
-    """
-    Process keypoints data to calculate angles for limbs for all frames provided.
-    Args:
-    keypoints_data (dict): Contains user and reference data with keypoints for multiple frames.
-    Returns:
-    dict: Angles for user's and reference's limbs for each frame.
-    """
-    results = {
-        'user_angles': [],
-        'reference_angles': []
+    v1 = vector(p1, p2)
+    v2 = vector(p3, p2)
+
+    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
+    magnitude1 = math.sqrt(v1[0]**2 + v1[1]**2)
+    magnitude2 = math.sqrt(v2[0]**2 + v2[1]**2)
+
+    # Check if either magnitude is zero to prevent division by zero
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0  # Can return 0 or some other default value indicating an undefined angle
+
+    # Calculate cosine of the angle using the dot product
+    cos_angle = dot_product / (magnitude1 * magnitude2)
+    # Clamp cos_angle within the valid range for acos, even if there's a slight floating point error
+    cos_angle = max(-1, min(1, cos_angle))
+
+    # Calculate the angle in radians and convert to degrees
+    angle = math.acos(cos_angle)
+    return math.degrees(angle)
+
+
+def distance(p1, p2):
+    """Calculate the Euclidean distance between two points."""
+    return math.sqrt((p1['x'] - p2['x'])**2 + (p1['y'] - p2['y'])**2)
+
+def calculate_body_rotations(frame):
+    """Calculate rotational angles for shoulders and hips."""
+    return {
+        'shoulder_rotation': calculate_angle(frame['Left Shoulder'], frame['Right Shoulder'], {'x': frame['Nose']['x'], 'y': frame['Nose']['y'] + 10}),
+        'hip_rotation': calculate_angle(frame['Left Hip'], frame['Right Hip'], {'x': frame['Nose']['x'], 'y': frame['Nose']['y'] + 10})
     }
 
-    print(keypoints_data)
-
-    # Process all user frames
-    for frame in keypoints_data['user']:
-        user_angles = {
-            'right_arm': calculate_angle(frame['Right Shoulder'], frame['Right Elbow'], frame['Right Wrist']),
-            'left_arm': calculate_angle(frame['Left Shoulder'], frame['Left Elbow'], frame['Left Wrist']),
-            'right_leg': calculate_angle(frame['Right Hip'], frame['Right Knee'], frame['Right Ankle']),
-            'left_leg': calculate_angle(frame['Left Hip'], frame['Left Knee'], frame['Left Ankle'])
-        }
-        results['user_angles'].append(user_angles)
-
-    # Process all reference frames, if any
-    for frame in keypoints_data.get('reference', []):  # Use get to handle the case where 'reference' may be empty
-        reference_angles = {
-            'right_arm': calculate_angle(frame['Right Shoulder'], frame['Right Elbow'], frame['Right Wrist']),
-            'left_arm': calculate_angle(frame['Left Shoulder'], frame['Left Elbow'], frame['Left Wrist']),
-            'right_leg': calculate_angle(frame['Right Hip'], frame['Right Knee'], frame['Right Ankle']),
-            'left_leg': calculate_angle(frame['Left Hip'], frame['Left Knee'], frame['Left Ankle'])
-        }
-        results['reference_angles'].append(reference_angles)
-
-    return results
-
-# Example keypoints data structure expected
-# keypoints_data = {
-#     'user': {
-#         'Right Shoulder': {'x': 0, 'y': 0},
-#         'Right Elbow': {'x': 1, 'y': 0},
-#         'Right Wrist': {'x': 2, 'y': 0},
-#         ...
-#     },
-#     'reference': {
-#         'Right Shoulder': {'x': 0, 'y': 0},
-#         'Right Elbow': {'x': 0.5, 'y': 0},
-#         'Right Wrist': {'x': 1, 'y': 0},
-#         ...
-#     }
-# }
-
-
-def calculate_angles(frames):
-    # Example logic to calculate angles
-    # This is a placeholder function
+def calculate_elbow_bend(frame):
+    """Calculate elbow bend angles."""
     return {
-        'right_arm': 90,  # Example angle
-    } 
+        'right_elbow': calculate_angle(frame['Right Shoulder'], frame['Right Elbow'], frame['Right Wrist']),
+        'left_elbow': calculate_angle(frame['Left Shoulder'], frame['Left Elbow'], frame['Left Wrist'])
+    }
 
-import math
+def calculate_knee_flexion(frame):
+    """Calculate knee flexion angles."""
+    return {
+        'right_knee': calculate_angle(frame['Right Hip'], frame['Right Knee'], frame['Right Ankle']),
+        'left_knee': calculate_angle(frame['Left Hip'], frame['Left Knee'], frame['Left Ankle'])
+    }
 
-def calculate_angle(p1, p2, p3):
-    """
-    Calculate the angle at p2 given three points p1, p2, and p3.
-    Each point p is a dictionary with 'x' and 'y' as keys.
+def calculate_weight_shift(frames):
+    """Assess the shift in weight by comparing hip positions over frames."""
+    if len(frames) > 1:
+        return distance(frames[0]['Right Hip'], frames[-1]['Right Hip'])
+    return 0
 
-    Args:
-    p1, p2, p3 (dict): Points in the format {'x': float, 'y': float}
+def calculate_wrist_hinge(frame):
+    """Calculate the hinge angles for the golfer's wrists."""
+    return {
+        'right_wrist_hinge': calculate_angle(frame['Right Elbow'], frame['Right Wrist'], {'x': frame['Right Wrist']['x'] + 10, 'y': frame['Right Wrist']['y']}),
+        'left_wrist_hinge': calculate_angle(frame['Left Elbow'], frame['Left Wrist'], {'x': frame['Left Wrist']['x'] - 10, 'y': frame['Left Wrist']['y']})
+    }
 
-    Returns:
-    float: Angle in degrees at p2.
-    """
-    # Vector from p1 to p2
-    v1 = (p1['x'] - p2['x'], p1['y'] - p2['y'])
-    # Vector from p3 to p2
-    v2 = (p3['x'] - p2['x'], p3['y'] - p2['y'])
+def calculate_balance_stability(frames):
+    """Calculate metrics indicative of the golfer's balance and stability throughout the swing."""
+    balance_metrics = {}
+    if len(frames) > 1:
+        initial_frame = frames[0]
+        final_frame = frames[-1]
+        balance_metrics['hip_stability'] = distance(initial_frame['Right Hip'], final_frame['Right Hip'])
+        balance_metrics['ankle_stability'] = distance(initial_frame['Right Ankle'], final_frame['Right Ankle'])
+    return balance_metrics
 
-    # Calculate the dot product of vectors v1 and v2
-    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
+def process_keypoints_data(keypoints_data):
+    """Generate a comprehensive analysis of golf swing using various metrics."""
+    user_results = {}
+    reference_results = {}
+    for key in ['body_rotations', 'elbow_bend', 'knee_flexion', 'weight_shift', 'wrist_hinge']:
+        user_results[key] = []
+        reference_results[key] = []
+    
+    for frame in keypoints_data['user']:
+        user_results['body_rotations'].append(calculate_body_rotations(frame))
+        user_results['elbow_bend'].append(calculate_elbow_bend(frame))
+        user_results['knee_flexion'].append(calculate_knee_flexion(frame))
+        user_results['wrist_hinge'].append(calculate_wrist_hinge(frame))
+    
+    user_results['weight_shift'] = calculate_weight_shift(keypoints_data['user'])
+    user_results['balance'] = calculate_balance_stability(keypoints_data['user'])
 
-    # Calculate the magnitudes of vectors v1 and v2
-    magnitude_v1 = math.sqrt(v1[0]**2 + v1[1]**2)
-    magnitude_v2 = math.sqrt(v2[0]**2 + v2[1]**2)
+    for frame in keypoints_data['reference']:
+        reference_results['body_rotations'].append(calculate_body_rotations(frame))
+        reference_results['elbow_bend'].append(calculate_elbow_bend(frame))
+        reference_results['knee_flexion'].append(calculate_knee_flexion(frame))
+        reference_results['wrist_hinge'].append(calculate_wrist_hinge(frame))
+    
+    reference_results['weight_shift'] = calculate_weight_shift(keypoints_data['reference'])
+    reference_results['balance'] = calculate_balance_stability(keypoints_data['reference'])
 
-    # Calculate the angle in radians
-    angle_radians = math.acos(dot_product / (magnitude_v1 * magnitude_v2))
-
-    # Convert angle from radians to degrees
-    angle_degrees = math.degrees(angle_radians)
-
-    return angle_degrees
-
+    return user_results, reference_results
 
 
 def generate_golf_swing_feedback(user_angles, pro_angles):
