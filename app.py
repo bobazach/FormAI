@@ -78,15 +78,20 @@ def dashboard():
 def analyze():
     return render_template('analyze.html')
 
-@app.route('/get-feedback', methods=['POST'])
-def get_feedback():
-    user_angles = request.json['user_angles']
-    pro_angles = request.json['pro_angles']
 
-    # function fdefined in gpt.py
-    feedback = generate_golf_swing_feedback(user_angles, pro_angles)
-    
-    return jsonify({'feedback': feedback})
+@app.route('/get-suggestions', methods=['POST'])
+def get_suggestions():
+    data = request.json
+    formatted_data = data.get('formattedData', "")
+    if not formatted_data:
+        print("Error: No data received")
+        return jsonify({'error': 'No data provided'}), 400
+
+    print("Formatted Data Received:", formatted_data)
+    # Simulated processing of formatted data
+    # Here you would parse the formatted data string if necessary and call the appropriate function in gpt.py
+    suggestions = generate_golf_swing_feedback(formatted_data, formatted_data)  # Adjust as needed
+    return jsonify({'suggestions': suggestions})
 
 
 if __name__ == '__main__':

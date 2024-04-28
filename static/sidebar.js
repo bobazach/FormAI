@@ -26,6 +26,20 @@ function createNewSession() {
     sessionTemplate.id = 'session' + sessionId;
     document.getElementById('currentSession').appendChild(sessionTemplate);
 
+    const suggestionsBox = document.createElement('div');
+    suggestionsBox.id = 'suggestionsContent' + sessionId;  // Unique ID
+    suggestionsBox.style.marginTop = '10px';
+    suggestionsBox.style.border = '1px solid #ccc';
+    suggestionsBox.style.padding = '10px';
+    suggestionsBox.textContent = 'Suggestions will appear here...';
+    sessionTemplate.appendChild(suggestionsBox);  // Append to the session container
+
+    const generateSuggestionsButton = document.createElement('button');
+    generateSuggestionsButton.textContent = 'Create Suggestions for Me';
+    generateSuggestionsButton.onclick = () => fetchSuggestions(sessionId);
+    sessionTemplate.appendChild(generateSuggestionsButton);  // Append to the session container
+
+
     resetSessionTemplate(sessionTemplate);  // Reset the template to its default state
 
     sessions[sessionId] = {
@@ -37,7 +51,9 @@ function createNewSession() {
         keypointsDataReference: [],
         keypointsIndexReference: 0,
         allKeypointsUser: [],
-        allKeypointsReference: []
+        allKeypointsReference: [],
+        suggestionsBox: suggestionsBox,
+        generateSuggestionsButton: generateSuggestionsButton  // Store the reference to the button
     };
 
     initSessionControls(sessionTemplate, sessionId);
@@ -410,6 +426,9 @@ function getCurrentSessionKeypoints(sessionId) {
 
 }
 
+function getCurrentSessionId() {
+    return currentSessionId;
+}
 
 
 
