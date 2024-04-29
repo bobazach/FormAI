@@ -7,6 +7,9 @@
 </head>
 <body>
     <div id="sessionSidebar">
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/FormAILogo.png') }}" class="logo" alt="FormAI Logo">
+        </a>
         <button id="newSessionBtn">New Analysis Session</button>
         <ul id="sessionList">
             <!-- Sessions will be dynamically added here -->

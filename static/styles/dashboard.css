@@ -6,6 +6,11 @@ body, html {
     text-align: center; /* Center text by default */
 }
 
+.logo{
+    height: 30px;
+    width: auto;
+}
+
 #container {
     display: flex; /* Use flexbox to layout children side by side */
     justify-content: center; /* Center the child elements horizontally */

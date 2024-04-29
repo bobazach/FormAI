@@ -8,6 +8,9 @@
 </head>
 <body>
     <div class="login-container">
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/FormAILogo.png') }}" class="logo" alt="FormAI Logo">
+        </a>
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}

@@ -10,7 +10,9 @@
     <div id="first-viewport-container">
         <img id="background-image" src="{{url_for('static', filename='images/pebble_beanch.jpeg')}}" alt="">
         <div class="header">
-            <img src="{{url_for('static', filename='images/FormAILogo.png')}}" class="logo" alt="FormAI Logo">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/FormAILogo.png') }}" class="logo" alt="FormAI Logo">
+            </a>
             <nav id="nav-buttons">
                 <form action="/login" method="get">
                     <button class="login-button">LOGIN</button>
